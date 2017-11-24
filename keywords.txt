@@ -1,0 +1,35 @@
+#######################################
+# Syntax Coloring Map For SIM
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DFRobot_L218	KEYWORD1
+DFL218GetPosition	KEYWORD1
+DFL218File	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################	
+
+begin	KEYWORD2
+init	KEYWORD2
+getPosition	KEYWORD2
+getLongitude	KEYWORD2
+getLatitude	KEYWORD2
+getList	KEYWORD2
+createFile	KEYWORD2
+readFile	KEYWORD2
+deleteFile	KEYWORD2
+writeFile	KEYWORD2
+createFolder	KEYWORD2
+deleteFolder	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+Hex	LITERAL1
+Normal	LITERAL1
