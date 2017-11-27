@@ -14,6 +14,7 @@ public:
     bool     initFile(void);
     char*    getList(void);
     char*    getList(char *foldername);
+    char*    getSpace(void);
     bool     createFile(char *filename);
     char*    readFile(char *filename,int offset = 0, int len = 50, Mode mode = Normal);
     bool     deleteFile(char *filename);

@@ -63,6 +63,19 @@ char* DFRobot_L218::getList(char *foldername)
     }
 }
 
+char* DFRobot_L218::getSpace(void)
+{
+    if(SIMcore.getCommandCounter() == 1){
+        char fileSpace[50];
+        SIMcore.cleanBuffer(fileSpace,50);
+        SIMcore.send_cmd("AT+FSINFO=\"Z:\"\r\n");
+        SIMcore.readBuffer(fileSpace,50);
+        return fileSpace+18;
+    }else{
+        return "error";
+    }
+}
+
 bool  DFRobot_L218::createFile(char *filename)
 {
     if(SIMcore.getCommandCounter() == 1){

@@ -8,7 +8,9 @@
 #include <Wire.h>
 #include <DFRobot_L218.h>
 
-SoftwareSerial     mySerial(8,7);                               //RX TX
+#define PIN_TX     7
+#define PIN_RX     8
+SoftwareSerial     mySerial(PIN_RX,PIN_TX);
 DFRobot_L218       l218;
 
 void setup(){

@@ -93,6 +93,14 @@ char* getList(void);
 char* getList(char *foldername);
 
 /*
+ * @brief Get disk space information
+ *
+ * @return
+ *     The size of disk space
+ */
+char* getSpace(void);
+
+/*
  * @brief Create a new file
  *
  * @param 

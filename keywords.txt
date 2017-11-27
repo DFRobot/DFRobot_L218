@@ -21,6 +21,7 @@ getLongitude	KEYWORD2
 getLatitude	KEYWORD2
 initFile	KEYWORD2
 getList	KEYWORD2
+getSpace	KEYWORD2
 createFile	KEYWORD2
 readFile	KEYWORD2
 deleteFile	KEYWORD2

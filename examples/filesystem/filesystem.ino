@@ -9,7 +9,9 @@
 #include <Wire.h>
 #include <DFRobot_L218.h>
 
-SoftwareSerial     mySerial(8,7);                                         //RX TX
+#define PIN_TX     7
+#define PIN_RX     8
+SoftwareSerial     mySerial(PIN_RX,PIN_TX);
 DFRobot_L218       l218;
 
 void setup(){
@@ -31,6 +33,8 @@ void setup(){
 }
 
 void loop(){
+    Serial.println("Space info:");
+    Serial.print(l218.getSpace());
     Serial.println("List file :");
     Serial.print(l218.getList());                                         //Get the list of all files
     delay(50);
@@ -53,6 +57,8 @@ void loop(){
                 Serial.println("Read file in hex mode :");
                 Serial.print(l218.readFile("test/test.txt",0,10,Hex));    //Read data from specified file in hex mode
                 delay(50);
+                Serial.println("Space info:");
+                Serial.print(l218.getSpace());
                 Serial.println("Delete file");
                 if(l218.deleteFile("test/test.txt")){                     //Delete the file
                     Serial.println("New folder list :");
@@ -62,6 +68,8 @@ void loop(){
                     if(l218.deleteFolder("test")){                        //Delete the folder
                         Serial.println("New file list :");
                         Serial.print(l218.getList());
+                        Serial.println("Space info:");
+                        Serial.print(l218.getSpace());
                     }else{
                         Serial.println("Fail to delet folder");
                     }
