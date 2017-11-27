@@ -1,27 +1,25 @@
  /*
   * file filesystem.ino
-  * brief DFRobot's SIM module
+  * brief DFRobot's L218 module
   * This example use for L218 file system
   * After initialization is completed it will list all files and create folder, create file in new folder, write data to new file
   * Read data from new file then delete new file and folder.It will show ever step result.
   */
 
 #include <Wire.h>
-#include <DFRobot_SIM.h>
 #include <DFRobot_L218.h>
 
-SoftwareSerial   mySerial(8,7);                                       //RX TX
-DFSIM            sim;
-DFL218File       L218F;
+SoftwareSerial     mySerial(8,7);                                         //RX TX
+DFRobot_L218       l218;
 
 void setup(){
     Serial.begin(115200);
-    sim.begin(mySerial);                                                   //Set SoftwareSerial
+    l218.begin(mySerial);                                                 //Set SoftwareSerial
     Serial.println("L218 file system");
     Serial.println("Init file system......");
     bool Connected = false;
     while(!Connected){
-        if(L218F.init()){                                                  //Init file system
+        if(l218.initFile()){                                              //Init file system
             Connected = true;
         }else{
             Serial.println("Fail to init file syste");
@@ -34,36 +32,36 @@ void setup(){
 
 void loop(){
     Serial.println("List file :");
-    Serial.print(L218F.getList());                                         //Get the list of all files
+    Serial.print(l218.getList());                                         //Get the list of all files
     delay(50);
     Serial.println("Create folder :");
-    if(L218F.createFolder("test")){                                        //Create a folder
+    if(l218.createFolder("test")){                                        //Create a folder
         Serial.println("New file list :");
-        Serial.print(L218F.getList());
+        Serial.print(l218.getList());
         delay(50);
         Serial.println("New folder list :");
-        Serial.print(L218F.getList("test"));                               //Get the list of specified folder
+        Serial.print(l218.getList("test"));                               //Get the list of specified folder
         delay(50);
         Serial.println("Create file :");
-        if(L218F.createFile("test/test.txt")){                             //Create a file
+        if(l218.createFile("test/test.txt")){                             //Create a file
             Serial.println("New folder list :");
-            Serial.print(L218F.getList("test"));
+            Serial.print(l218.getList("test"));
             delay(50);
-            if(L218F.writeFile("test/test.txt", "Hi DFRobot")){            //Write data to specified file
+            if(l218.writeFile("test/test.txt", "Hi DFRobot")){            //Write data to specified file
                 Serial.println("Read file :");
-                Serial.print(L218F.readFile("test/test.txt",0,10));        //Read data from specified file
+                Serial.print(l218.readFile("test/test.txt",0,10));        //Read data from specified file
                 Serial.println("Read file in hex mode :");
-                Serial.print(L218F.readFile("test/test.txt",0,10,Hex));    //Read data from specified file in hex mode
+                Serial.print(l218.readFile("test/test.txt",0,10,Hex));    //Read data from specified file in hex mode
                 delay(50);
                 Serial.println("Delete file");
-                if(L218F.deleteFile("test/test.txt")){                     //Delete the file
+                if(l218.deleteFile("test/test.txt")){                     //Delete the file
                     Serial.println("New folder list :");
                     Serial.println("test");
                     delay(50);
                     Serial.println("Delete folder");
-                    if(L218F.deleteFolder("test")){                        //Delete the folder
+                    if(l218.deleteFolder("test")){                        //Delete the folder
                         Serial.println("New file list :");
-                        Serial.print(L218F.getList());
+                        Serial.print(l218.getList());
                     }else{
                         Serial.println("Fail to delet folder");
                     }

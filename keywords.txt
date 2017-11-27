@@ -15,10 +15,11 @@ DFL218File	KEYWORD1
 #######################################	
 
 begin	KEYWORD2
-init	KEYWORD2
+initPos	KEYWORD2
 getPosition	KEYWORD2
 getLongitude	KEYWORD2
 getLatitude	KEYWORD2
+initFile	KEYWORD2
 getList	KEYWORD2
 createFile	KEYWORD2
 readFile	KEYWORD2

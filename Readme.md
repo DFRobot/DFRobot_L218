@@ -5,7 +5,6 @@ Provides an Arduino library for L218
 
 * [Summary](#summary)
 * [Methods](#methods)
-* [Depends](#depends)
 * [History](#history)
 * [Credits](#credits)
 <snippet>
@@ -32,6 +31,15 @@ The library use for L218 as following function
 bool init(void);
 
 /*
+ * @brief Init L218 positioning module
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool initPos(void);
+
+/*
  * @brief Get the current position
  *
  * @return
@@ -55,6 +63,15 @@ char* getLongitude(void);
  *     Latitude value
  */
 char* getLatitude(void);
+
+/*
+ * @brief Init L218 file system
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool initFile(void);
 
 /*
  * @brief Get file list
@@ -140,6 +157,8 @@ bool deleteFolder(char *foldername);
 /*
  * @brief Write data to specified file
  *
+ * @note  Folder must be empty
+ *
  * @param
  *    *filename   The name of specified file
  *    *data       The input data
@@ -153,15 +172,9 @@ bool writeFile(char *filename, char *data, Mode mode);
 
 ```
 
-## Depends
-
-Projects           |                     URL                       | Remarks
------------------- | :-------------------------------------------: | -----------
-DFRobot_SIM        |    https://github.com/DFRobot/DFRobot_SIM     | must
-
 ## History
 
-- data 2017-11-24
+- data 2017-11-22
 - version V0.1
 
 ## Credits
