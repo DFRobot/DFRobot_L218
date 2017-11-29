@@ -5,6 +5,7 @@ Provides an Arduino library for L218
 
 * [Summary](#summary)
 * [Methods](#methods)
+* [Depends](#depends)
 * [History](#history)
 * [Credits](#credits)
 <snippet>
@@ -179,6 +180,12 @@ bool deleteFolder(char *foldername);
 bool writeFile(char *filename, char *data, Mode mode);
 
 ```
+
+## Depends
+
+Projects           |                     URL                       | Remarks
+------------------ | :-------------------------------------------: | -----------
+DFRobot_SIM        |  https://github.com/DFRobot/DFRobot_SIM       | must
 
 ## History
 

@@ -15,6 +15,7 @@ DFRobot_L218       l218;
 
 void setup(){
     Serial.begin(115200);
+    delay(2000);
     Serial.println("Get Postion");
     Serial.println("Check and init SIMcard......");
     bool Connected = false;
@@ -44,6 +45,7 @@ void loop(){
     Serial.println("Enter anything to get positioning ");
     char loge[10];
     readSerial(loge);
+    Serial.println("Getting position......");
     if(l218.getPosition()){                                     //Get the current position
         Serial.print("Longtude :");
         Serial.println(l218.getLongitude());                    //Get longitude

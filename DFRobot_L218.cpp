@@ -232,12 +232,13 @@ bool   DFRobot_L218::initPos(void)
 
 bool   DFRobot_L218::getPosition(void)
 {
-    char  posBuffer[50];
+    char  posBuffer[80];
     char *pLongitude,*pLatitude;
-    SIMcore.cleanBuffer(posBuffer,50);
+    SIMcore.cleanBuffer(posBuffer,80);
     if((SIMcore.getCommandCounter() == 2) || (SIMcore.getCommandCounter() == 5)){
+//        delay(500);
         SIMcore.send_cmd("AT+GTPOS=2\r\n");
-        SIMcore.readBuffer(posBuffer,50);
+        SIMcore.readBuffer(posBuffer,80);
         if(NULL != strstr(posBuffer,"+GTPOS")){
             if(NULL != strstr(posBuffer,"$")){
                 SIMcore.setCommandCounter(3);
@@ -265,6 +266,7 @@ bool   DFRobot_L218::getPosition(void)
         return false;
     }
     if(SIMcore.getCommandCounter() == 3){
+//Serial.println(posBuffer);
         pLongitude = strstr(posBuffer,":");
         pLatitude  = strstr(posBuffer,",");
         memcpy(longitude,pLongitude+2,7);
@@ -301,7 +303,7 @@ char*   DFRobot_L218::getLongitude(void)
         SIMcore.setCommandCounter(2);
         return "Error:WIFI information error";
     }else{
-        return "error";
+        return "Error";
     }
 }
 
@@ -332,6 +334,6 @@ char*   DFRobot_L218::getLatitude(void)
         SIMcore.setCommandCounter(2);
         return "Error:WIFI information error";
     }else{
-        return "error";
+        return "Error";
     }
 }

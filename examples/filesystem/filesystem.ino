@@ -16,6 +16,7 @@ DFRobot_L218       l218;
 
 void setup(){
     Serial.begin(115200);
+    delay(2000);
     l218.begin(mySerial);                                                 //Set SoftwareSerial
     Serial.println("L218 file system");
     Serial.println("Init file system......");
