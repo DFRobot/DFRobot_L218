@@ -1,14 +1,14 @@
 #ifndef __DFRobot_L218_H__
 #define __DFRobot_L218_H__
 
-#include "DFRobot_SIMcore.h"
+#include "DFRobot_SIM.h"
 
 enum Mode{
     Normal,
     Hex,
 };
 
-class DFRobot_L218 : public DFRobot_SIMcore
+class DFRobot_L218 : public DFRobot_SIMcore , public DFRobot_SIMphonecall , public DFRobot_SIMsms , public DFRobot_SIMclient
 {
 public:
     bool     initFile(void);

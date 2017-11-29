@@ -1,5 +1,5 @@
  /*
-  * file getPostion.ino
+  * file DFRobot_L218_getPostion.ino
   * brief DFRobot's L218 module
   * This example use for get time ,longitude and latitude
   * After initialization is completed u will get time and enter anything to get longitude and latitude
@@ -39,6 +39,9 @@ void setup(){
         }
     }
     Serial.println("Positioning function initialized");
+    delay(100);
+    Serial.print("Time:");
+    Serial.println(l218.getTime());
 }
 
 void loop(){
