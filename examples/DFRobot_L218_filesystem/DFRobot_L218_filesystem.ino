@@ -1,9 +1,9 @@
  /*
-  * file DFRobot_L218_filesystem.ino
-  * brief DFRobot's L218 module
-  * This example use for L218 file system
-  * After initialization is completed it will list all files and create folder, create file in new folder, write data to new file
-  * Read data from new file then delete new file and folder.It will show ever step result.
+  * File  : DFRobot_L218_filesystem.ino
+  * Brief : DFRobot's L218 module
+  *         This example use for L218 file system
+  *         After initialization is completed it will list all files and create folder, create file in new folder, write data to new file
+  *         Read data from new file then delete new file and folder. It will show ever step result.
   */
 
 #include <Wire.h>
@@ -48,9 +48,11 @@ void loop(){
         Serial.println("Fail to create folder");
         while(1);
     }
+
     Serial.println("New folder list :");
     Serial.print(l218.getList("test"));                           //Get the list of specified folder
     delay(50);
+
     Serial.println("Create file :");
     if(l218.createFile("test/test.txt")){                         //Create a file
         Serial.println("New folder list :");
@@ -60,6 +62,7 @@ void loop(){
         Serial.println("Fail to create file");
         while(1);
     }
+
     if(l218.writeFile("test/test.txt", "Hi DFRobot")){            //Write data to specified file
         Serial.println("Read file :");
         Serial.print(l218.readFile("test/test.txt",0,10));        //Read data from specified file
@@ -70,6 +73,7 @@ void loop(){
         Serial.println("Fail to write file");
         while(1);
     }
+
     Serial.println("Space info:");
     Serial.print(l218.getSpace());
     Serial.println("Delete file");
@@ -81,6 +85,7 @@ void loop(){
         Serial.println("Fail to delet file");
         while(1);
     }
+
     Serial.println("Delete folder");
     if(l218.deleteFolder("test")){                                //Delete the folder
         Serial.println("New file list :");

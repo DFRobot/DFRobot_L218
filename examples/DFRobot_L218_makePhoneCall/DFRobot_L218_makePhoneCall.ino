@@ -1,8 +1,8 @@
  /*
-  * file DFRobot_L218_makePhoneCall.ino
-  * brief DFRobot's SIM module
-  * This example use for make a phone call
-  * After initialization is completed enter a phone number to make a phone call then enter anything to hang call
+  * File  : DFRobot_L218_makePhoneCall.ino
+  * Brief : DFRobot's SIM module
+  *         This example use for make a phone call
+  *         After initialization is completed enter a phone number to make a phone call then enter anything to hang call
   */
 
 #include <Wire.h>

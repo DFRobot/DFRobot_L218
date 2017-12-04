@@ -1,6 +1,6 @@
  /*
-  * file DFRobot_L218_client.ino
-  * brief DFRobot's SIM module
+  * File  : DFRobot_L218_client.ino
+  * Brief : DFRobot's SIM module
   * This example use for connect net and send data
   * After initialization is completed input Server IP if connected input ur data
   */

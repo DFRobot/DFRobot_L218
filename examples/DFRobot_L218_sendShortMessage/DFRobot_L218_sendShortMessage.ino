@@ -1,8 +1,8 @@
  /*
-  * file DFRobot_l218_sendShortMessage.ino
-  * brief DFRobot's SIM module
-  * This example use for send short message
-  * After initialization is completed ennter a phone number then enter the message data
+  * File  : DFRobot_l218_sendShortMessage.ino
+  * Brief : DFRobot's SIM module
+  *         This example use for send short message
+  *         After initialization is completed ennter a phone number then enter the message data
   */
 
 #include <Wire.h>
