@@ -1,8 +1,5 @@
 # DFROBOT_L218 Library for Arduino
-- Provides an Arduino library for L218
-- L218 is a excellent global positioning navigation chip rely on GPRS+GPS+BDS(BeiDou Navigation Satellite System), it a Low-power High-performance module 
-supports Quad-band GSM/GPRS((850/900/1800/1900)). The chip has particularly wide operating temperature and internal integration of the TCP / IP protocol with 
-small package.
+Provides an Arduino library for L218
 
 ## Table of Contents
 
@@ -16,133 +13,14 @@ small package.
 
 ## Summary
 
-### The library provide some application rely on L218:
+The library use for L218 as following function
 
-#### Make a phone call
-#### Send short massage
 #### Get time
 #### Get current position
 #### Independent file system
 
 ## Methods
 ```C++
-
-/*
- * @brief Set software serial
- *
- * @Param
- *     &s_ SoftwareSerial
- */
-void begin(Stream &s_);
-
-/*
- * @brief Check signal quality
- *
- * @return
- *     0-30:Signal quality
- */
-int checkSignalQuality(void);
-
-/*
- * @brief Start up connection
- *
- * @param 
- *    *server Server domain name
- *     ptl    Choose connection protocol Passible value: TCP UDP
- *     port   Contented port
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool connect(char *server,Protocol ptl,int port);
-
-/*
- * @brief Send data
- *
- * @param 
- *    *data The data to send
- */
-void send(char *data);
-
-/*
- * @brief Send data with specify the length
- *
- * @param 
- *     buffer The buffer stored data to be send
- *     len    The length of data to be send
- */
-void send(void* buffer,size_t len);
-
-/*
- * @brief End the connection
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool close(void);
-
-/*
- * @brief Get time
- *
- * @return
- *     Current time
- */
-char* getTime(void);
-
-/*
- * @brief Start a voice call
- * 
- * @param
- *     number Target phonenumber
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool voiceCall(char* number);
-
-/*
- * @brief Hang up the call
- */
-void hangCall(void);
-
-/*
- * @brief Ready to send short message
- *
- * @param 
- *     to     Target number for send short message
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool beginSMS(const char* to);
-
-/*
- * @brief Edit message content
- *
- * @param 
- *     c   The message content
- */
-void editSMS(const char* c);
-
-/*
- * @brief Send short message
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool sendSMS(void);
-
-/*
- * @brief Get file list
- *
- * @return
- *     The list of all file
- */
 
 /*
  * @brief Init L218 module
@@ -300,6 +178,71 @@ bool deleteFolder(char *foldername);
  *     false  Failed
  */
 bool writeFile(char *filename, char *data, Mode mode);
+
+/*
+ * @brief MQTT connect request
+ *
+ * @param iot_client Client name user-defined
+ *
+ * @param iot_username The user name identifies the name of the user who is connecting
+ *
+ * @param iot_key The password for user
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
+
+/*
+ * @brief MQTT send command
+ *
+ * @param iot_topic Target topic
+ *
+ * @param iot_data  The data you want to send
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool MQTTsend(char* iot_topic, char* iot_data);
+
+/*
+ * @brief MQTT subscribe request
+ *
+ * @param iot_topic The topic you want to subscribe
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool MQTTsubscribe(char* iot_topic);
+
+/*
+ * @brief Receive data from subscribed topic
+ *
+ * @param iot_topic The subscribed topic
+ *
+ * @param buff      The buffer to store data
+ *
+ * @param maxlen    The maximum length of the buffer
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool     MQTTrecv(char* iot_topic, char* buff,int maxlen);
+
+/*
+ * @brief MQTT unsubscribe request
+ *
+ * @param iot_topic The topic you want to unsubscribe
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool MQTTunsubscribe(char* iot_topic);
 
 ```
 

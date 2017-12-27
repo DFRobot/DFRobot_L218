@@ -21,6 +21,12 @@ public:
     bool     writeFile(char *filename, char *data, Mode mode = Normal);
     bool     createFolder(char *foldername);
     bool     deleteFolder(char *foldername);
+    bool     MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
+    bool     MQTTsend(char* iot_topic, char* iot_data);
+    bool     MQTTsubscribe(char* iot_topic);
+    bool     MQTTunsubscribe(char* iot_topic);
+    bool     MQTTrecv(char* iot_topic, char* buf,int maxlen);
+    bool     MQTTdisconnect(void);
     bool     initPos(void);
     bool     getPosition(void);
     char*    getLongitude(void);

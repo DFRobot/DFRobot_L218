@@ -266,7 +266,6 @@ bool   DFRobot_L218::getPosition(void)
         return false;
     }
     if(getCommandCounter() == 3){
-//Serial.println(posBuffer);
         pLongitude = strstr(posBuffer,":");
         pLatitude  = strstr(posBuffer,",");
         memcpy(longitude,pLongitude+2,7);
@@ -335,5 +334,152 @@ char*   DFRobot_L218::getLatitude(void)
         return "Error:WIFI information error";
     }else{
         return "Error";
+    }
+}
+
+bool  DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot_key)
+{
+    if(check_send_cmd("AT+CIPSEND\r\n",">")){
+        char     MQTThead[10]={0x00,0x04,0x4d,0x51,0x54,0x54,0x04,0xc2,0x0b,0xb8};
+        
+        char MQTTbuff[50]={0};
+        MQTTbuff[0] = 0x10;
+        send_buff(MQTTbuff,1);
+        int leng = 10;
+        leng += strlen(iot_client)+2;
+        leng += strlen(iot_username)+2;
+        leng += strlen(iot_key)+2;
+        MQTTbuff[0] = leng ;
+        send_buff(MQTTbuff,1);
+        send_buff(MQTThead,10);
+        send_buff(MQTThead,1);
+        MQTTbuff[0]=strlen(iot_client);
+        send_buff(MQTTbuff,1);
+        send_cmd(iot_client);
+        send_buff(MQTThead,1);
+        MQTTbuff[0]=strlen(iot_username);
+        send_buff(MQTTbuff,1);
+        send_cmd(iot_username);
+        send_buff(MQTThead,1);
+        MQTTbuff[0]=strlen(iot_key);
+        send_buff(MQTTbuff,1);
+        send_cmd(iot_key);
+        if(check_send_cmd("","CLOSED")){
+            return false;
+        }else{
+            setCommandCounter(20);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool  DFRobot_L218::MQTTsend(char* iot_topic, char* iot_data)
+{
+    if(getCommandCounter() == 20){
+        if(check_send_cmd("AT+CIPSEND\r\n",">")){
+            char     MQTTdata[2]={0x00,0x04};
+            char     MQTTbuff[50]={0};
+            MQTTbuff[0] = 0x32;
+            send_buff(MQTTbuff,1);
+            MQTTbuff[0] = strlen(iot_topic)+strlen(iot_data)+4;
+            send_buff(MQTTbuff,2);
+            MQTTbuff[0] = strlen(iot_topic);
+            send_buff(MQTTbuff,1);
+            send_cmd(iot_topic);
+            send_buff(MQTTdata,2);
+            send_cmd(iot_data);
+            if(check_send_cmd("","CLOSED")){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
+}
+
+bool  DFRobot_L218::MQTTsubscribe(char* iot_topic)
+{
+    if(getCommandCounter() == 20){
+        if(check_send_cmd("AT+CIPSEND\r\n",">")){
+            char     MQTTbuff[10]={0};
+            MQTTbuff[0] = 0x82;
+            MQTTbuff[1] = strlen(iot_topic)+5;
+            MQTTbuff[3] = 0x0a;
+            MQTTbuff[5] = strlen(iot_topic);
+            send_buff(MQTTbuff,6);
+            send_cmd(iot_topic);
+            MQTTbuff[0] = 0x01;
+            send_buff(MQTTbuff,1);
+            if(check_send_cmd("","CLOSED")){
+                return false;
+            }else{
+                setCommandCounter(21);
+                return true;
+            }
+        }
+    }else{
+        return false;
+    }
+}
+
+bool  DFRobot_L218::MQTTunsubscribe(char* iot_topic)
+{
+    if(getCommandCounter() == 21){
+        if(check_send_cmd("AT+CIPSEND\r\n",">")){
+            char     MQTTbuff[10]={0};
+            MQTTbuff[0] = 0xa2;
+            MQTTbuff[1] = strlen(iot_topic)+4;
+            MQTTbuff[3] = 0x0a;
+            MQTTbuff[5] = strlen(iot_topic);
+            send_buff(MQTTbuff,6);
+            send_cmd(iot_topic);
+            if(check_send_cmd("","CLOSED")){
+                return false;
+            }else{
+                return true;
+                setCommandCounter(20);
+            }
+        }else{
+            return false;
+        }
+    }
+}
+
+bool  DFRobot_L218::MQTTrecv(char* iot_topic, char* buf, int maxlen)
+{
+    if(getCommandCounter() == 21){
+        char   MQTTbuff[maxlen+30];
+        char  *p; 
+        cleanBuffer(MQTTbuff,maxlen+30);
+        int i = readBuffer(MQTTbuff,maxlen+30);
+        for(int j=0;j<i;j++){
+            if(NULL != (p = strstr(MQTTbuff+j,iot_topic))){
+                memcpy(buf,p+strlen(iot_topic),maxlen+30);
+                return true;
+            }
+        }
+        return false;
+    }else{
+        return false;
+    }
+}
+
+bool  DFRobot_L218::MQTTdisconnect(void)
+{
+    if(check_send_cmd("AT+CIPSEND\r\n",">")){
+        char     MQTTdata[2]={0xe0,0x00};
+        send_buff(MQTTdata,2);
+        if(check_send_cmd("","CLOSED")){
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
     }
 }

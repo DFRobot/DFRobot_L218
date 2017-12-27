@@ -1,9 +1,8 @@
  /*
-  * File  : DFRobot_L218_getPostion.ino
-  * Brief : DFRobot's L218 module
-  *         This example use for get time ,longitude and latitude
-  *         After initialization is completed u will get time and enter anything to get longitude and latitude
-  * Note  : The positioning function works better in outdoor
+  * File   : DFRobot_L218_getPostion.ino
+  * Brief  : This example use for get time ,longitude and latitude
+  *          After initialization is completed u will get time and enter anything to get longitude and latitude
+  *          Thus we finished the positioning function verification
   */
 
 #include <Wire.h>
@@ -29,7 +28,6 @@ void setup(){
         }
     }
     Serial.println("SIM initialized.");
-
     Serial.println("Init positioning function......");
     Connected = false;
     while(!Connected){
@@ -41,7 +39,6 @@ void setup(){
         }
     }
     Serial.println("Positioning function initialized");
-
     delay(100);
     Serial.print("Time:");
     Serial.println(l218.getTime());

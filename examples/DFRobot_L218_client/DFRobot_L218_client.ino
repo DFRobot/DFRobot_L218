@@ -1,17 +1,23 @@
  /*
   * File  : DFRobot_L218_client.ino
-  * Brief : DFRobot's SIM module
-  * This example use for connect net and send data
-  * After initialization is completed input Server IP if connected input ur data
+  * Brief : This example use for connect to iot and communicate
+  *         After initialization is completed, connect to server IP and communicate with IOT as following step
+  *         Connect request > Send data >Subscribe topic > Recive data from topic > Unsubscribe > Disconnect
+  *         Thus we finished the IOT connection and communication verification
   */
 
 #include <Wire.h>
 #include <DFRobot_L218.h>
 
-#define PIN_TX     7
-#define PIN_RX     8
-SoftwareSerial     mySerial(PIN_RX,PIN_TX);
-DFRobot_L218       l218;
+#define serverIP        "iot.dfrobot.com.cn"
+#define IOT_CLIENT      "test"
+#define IOT_USERNAME    "HJmwapNfG"
+#define IOT_KEY         "B1gmvpT4fM"
+#define IOT_TOPIC       "HJEv6TVMM"
+#define PIN_TX           7
+#define PIN_RX           8
+SoftwareSerial           mySerial(PIN_RX,PIN_TX);
+DFRobot_L218             l218;
 
 void setup(){
     int signalQuality;
@@ -42,51 +48,84 @@ void setup(){
         }
     }
     Connected = false;
+
+    Serial.println("Init connect server......");
     while(!Connected){
-        if(l218.initNet()){                                   //Init web module
-            Serial.println("Init connect server");
+        if(l218.initNet()){                                   //Init net module
+            Serial.println("Done !");
             Connected = true;
         }else{
-            Serial.println("Failed to init connect server");
+            Serial.println("Failed !");
             delay(500);
         }
     }
 }
 
 void loop(){
-    Serial.println("Enter a server IP");
-    char  Loge[10];
-    char  serverIP[20];
     char  sendData[100];
-    readSerial(serverIP);
     Serial.print("Connect to :");
     Serial.println(serverIP);
-    if(l218.connect(serverIP, TCP, 80)){                      //Connect to server
-        Serial.println("Connected!");
-        Serial.println("Input data:");
-        readSerial(sendData);
-        Serial.print("Send data :");
-        Serial.println(sendData);
-        if(l218.send(sendData)){                              //Send data to server
-            Serial.println("Send data, recive:");
-            while(mySerial.available()){
-                Serial.write(mySerial.read());                //Get the recive data
-            }
-        }else{
-            Serial.println("Failed to send");
-        }
-        Serial.println("Enter anything to close connect");
-        readSerial(Loge);
-        if(l218.close()){                                     //Close connection
-            Serial.println("Close connect");
-            delay(1000);
-        }else{
-            Serial.println("Failed to close connect");
-            delay(1000);
-        }
+    if(l218.connect(serverIP, TCP, 1883)){                    //Connect to server
+        Serial.println("Connected !");
     }else{
         Serial.println("Failed to connect");
+        while(1);
     }
+    delay(200);
+
+    Serial.print("Connect to : ");
+    Serial.println(IOT_USERNAME);
+    if(l218.MQTTconnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){    //MQTT connect request
+        Serial.println("Connected !");
+    }else{
+        Serial.println("Failed to connect");
+        return;
+    }
+    delay(200);
+
+    Serial.println("Input data : ");
+    readSerial(sendData);
+    Serial.print("Send data :");
+    Serial.print(sendData);
+    Serial.println(" ......");
+    if(l218.MQTTsend(IOT_TOPIC,sendData)){                    //Send data to topic
+        Serial.println("Send OK");
+    }else{
+        Serial.println("Failed to send");
+        return;
+    }
+    delay(200);
+
+    Serial.print("Subscribe topic : ");
+    Serial.println(IOT_TOPIC);
+    if(l218.MQTTsubscribe(IOT_TOPIC)){                        //Subscribe topic
+        Serial.println("Subscribe OK ! Recive data for three times then unsubscribe");
+        int i = 0;
+        while(i<3){
+            char recvBuff[30] = {0};
+            if(l218.MQTTrecv(IOT_TOPIC,recvBuff,30)){         //Recive data from topic
+                Serial.print("Recive data :");
+                Serial.println(recvBuff);
+                i++;
+            }
+        }
+        Serial.print("Unsubscribe topic : ");
+        Serial.println(IOT_TOPIC);
+        l218.MQTTunsubscribe(IOT_TOPIC);                      //Unsubscribe topic
+    }else{
+        Serial.println("Fail to subscribe");
+        return;
+    }
+    delay(200);
+
+    Serial.println("Close connection......");
+    if(l218.MQTTdisconnect()){                                //MQTT disconnect request
+        Serial.println("Close connection !");
+    }else{
+        Serial.println("Fail to close connection !");
+        return;
+    }
+    delay(2000);
 }
 
 int readSerial(char result[]){
