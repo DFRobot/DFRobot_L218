@@ -1,165 +1,165 @@
 #include <DFRobot_L218.h>
 
-bool  DFRobot_L218::initFile(void)
+void   DFRobot_L218::init(void)
 {
-    if(!check_send_cmd("AT+FSCREATE=?\r\n","OK")){
-        setCommandCounter(0);
+    Serial1.begin(19200);
+    pinMode(3       , INPUT );
+    pinMode(6       , INPUT );
+    pinMode(7       , INPUT );
+    pinMode(8       , INPUT );
+    pinMode(9       , OUTPUT);
+    pinMode(12      , OUTPUT);
+    pinMode(13      , OUTPUT);
+    pinMode(A1      , OUTPUT);
+    pinMode(A2      , OUTPUT);
+    pinMode(A3      , OUTPUT);
+    pinMode(A4      , OUTPUT);
+    pinMode(A5      , OUTPUT);
+    digitalWrite(A1 , LOW   );
+    digitalWrite(A2 , HIGH  );
+    digitalWrite(A3 , HIGH  );
+    digitalWrite(A4 , HIGH  );
+    digitalWrite(A5 , HIGH  );
+    digitalWrite(12 , LOW   );
+    digitalWrite(13 , LOW   );
+}
+
+void   DFRobot_L218::startMPU6050(void)
+{
+    digitalWrite(12 , HIGH  );
+}
+
+void   DFRobot_L218::stopMPU6050()
+{
+    digitalWrite(12 , LOW   );
+}
+
+bool   DFRobot_L218::turnON(void)
+{
+    digitalWrite( 9 , HIGH  );
+    delay(2000);
+    digitalWrite( 9 , LOW   );
+    int i = 3;
+    while(i){
+        if(check_send_cmd("AT\r\n","OK")){
+            return true;
+        }
+        delay(500);
+        i--;
+    }
+    return false;
+}
+
+bool   DFRobot_L218::check_TurnON(void)
+{
+    if(check_send_cmd("AT\r\n","OK")){
+        return true;
+    }else{
         return false;
     }
-    delay(10);
-    if(!check_send_cmd("AT+FSREAD=?\r\n","OK")){
-        setCommandCounter(0);
+}
+
+bool   DFRobot_L218::check_SIMcard(void)
+{
+    int count = 0;
+    delay(1000);
+    while(count < 3){
+        if(check_send_cmd("AT\r\n","OK")){
+            break;
+        }else{
+            count++;
+            delay(300);
+        }
+    }
+    if(count == 3){
         return false;
     }
-    delay(10);
-    if(!check_send_cmd("AT+FSWRITE=?\r\n","OK")){
-        setCommandCounter(0);
+    count = 0;
+    while(count < 3){
+        if(check_send_cmd("AT+CPIN?\r\n","READY")){
+            break;
+        }else{
+            count++;
+            delay(300);
+        }
+    }
+    if(count == 3){
         return false;
     }
-    delay(10);
-    if(!check_send_cmd("AT+FSMKDIR=?\r\n","OK")){
-        setCommandCounter(0);
-        return false;
-    }
-    delay(10);
-    if(!check_send_cmd("AT+FSRMDIR=?\r\n","OK")){
-        setCommandCounter(0);
-        return false;
-    }
-    delay(10);
-    if(!check_send_cmd("AT+FSLS=?\r\n","OK")){
-        setCommandCounter(0);
-        return false;
-    }
-    setCommandCounter(1);
     return true;
 }
 
-char* DFRobot_L218::getList(void)
+void   DFRobot_L218::blink(int times , int interval)
 {
-    if(getCommandCounter() == 1){
-        char SIMList[300];
-        cleanBuffer(SIMList,300);
-        send_cmd("AT+FSLS\r\n");
-        readBuffer(SIMList,300);
-        return SIMList+9;
-    }else{
-        return "error";
+    while(times){
+        digitalWrite(Led , HIGH);
+        delay(interval);
+        digitalWrite(Led , LOW );
+        delay(interval);
+        times--;
     }
 }
 
-char* DFRobot_L218::getList(char *foldername)
+bool   DFRobot_L218::voiceCall(const char* phoneNumber)
 {
-    if(getCommandCounter() == 1){
-        char SIMList[300];
-        cleanBuffer(SIMList,300);
-        send_cmd("AT+FSLS=\"");
-        send_cmd(foldername);
-        send_cmd("\"\r\n");
-        readBuffer(SIMList,300);
-        return SIMList+8;
-    }else{
-        return "error";
-    }
-}
-
-char* DFRobot_L218::getSpace(void)
-{
-    if(getCommandCounter() == 1){
-        char fileSpace[50];
-        cleanBuffer(fileSpace,50);
-        send_cmd("AT+FSINFO=\"Z:\"\r\n");
-        readBuffer(fileSpace,50);
-        return fileSpace+18;
-    }else{
-        return "error";
-    }
-}
-
-bool  DFRobot_L218::createFile(char *filename)
-{
-    if(getCommandCounter() == 1){
-        send_cmd("AT+FSCREATE=\"");
-        send_cmd(filename);
-        if(check_send_cmd("\"\r\n","OK")){
-            return true;
-        }else{
-            return false;
-        }    
+    Serial1.write("ATD");
+    Serial1.write(phoneNumber);
+    if(check_send_cmd(";\r\n","OK")){
+        return true;
     }else{
         return false;
     }
 }
 
-char* DFRobot_L218::readFile(char *filename, int offset, int len, Mode mode)
+bool   DFRobot_L218::beginSMS(const char* phoneNumber)
 {
-    if(getCommandCounter() == 1){
-        int   rOffset = len+strlen(filename)+6;
-        rOffset *=2;
-        char  L218file[rOffset+50];
-        cleanBuffer(L218file,rOffset+50);
-        char  num1[4],num2[4];
-        itoa(offset, num1, 10);
-        itoa(len,    num2, 10);
-        if(mode == Normal){
-            send_cmd("AT+FSREAD=\"");
-        }else if(mode == Hex){
-            send_cmd("AT+FSREADHEX=\"");
-        }else{
-            return "No such mode";
-        }
-        send_cmd(filename);
-        send_cmd("\",");
-        send_cmd(num1);
-        send_cmd(",");
-        send_cmd(num2);
-        send_cmd("\r\n");
-        readBuffer(L218file,rOffset+50);
-        if(mode == Normal){
-            return L218file+10;
-        }
-        if(mode == Hex){
-            return L218file+13;
-        }
+    if(check_send_cmd("AT+CMGF=1\r\n","OK")){
+        delay(100);
     }else{
-        return "error";
+        return false;
     }
-}
-
-bool  DFRobot_L218::deleteFile(char *filename)
-{
-    if(getCommandCounter() == 1){
-        send_cmd("AT+FSDEL=\"");
-        send_cmd(filename);
-        if(check_send_cmd("\"\r\n","OK")){
-            return true;
-        }else{
-            return false;
-        }
+    Serial1.write("AT+CMGS=\"");
+    Serial1.write(phoneNumber);
+    if(check_send_cmd("\"\r\n",">")){
+        delay(100);
+        return true;
     }else{
         return false;
     }
 }
 
-bool  DFRobot_L218::writeFile(char *filename, char *data, Mode mode)
+bool   DFRobot_L218::sendSMS(const char* content)
 {
-    if(getCommandCounter() == 1){
-        char num[4];
-        int len = strlen(data);
-        itoa(len, num, 10);
-        if(mode == Normal){
-            send_cmd("AT+FSWRITE=\"");
-        }else if(mode == Hex){
-            send_cmd("AT+FSWRITEHEX=\"");
-        }else{
-            return false;
-        }
-        send_cmd(filename);
-        send_cmd("\",1,");
-        send_cmd(num);
-        if(check_send_cmd("\r\n",">")){
-            if(check_send_cmd(data,"OK")){
-                return true;
+    Serial1.write(content);
+    if(check_send_cmd("","+CMGS",900,5000)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool   DFRobot_L218::initPos(void)
+{
+    int  count = 0;
+    if(check_send_cmd("AT+CSTT=\"CMNET\"\r\n","OK")){
+        if(check_send_cmd("AT+ciicr\r\n","OK",1000,3000)){
+            if(check_send_cmd("AT+GTPOS=1\r\n","OK",1000,3000)){
+                check_send_cmd("AT+GTPOS=2\r\n","OK",1000,3000);
+                check_send_cmd("AT+CIPSHUT\r\n","OK",1000,3000);
+                if(check_send_cmd("AT+EGDCONT=2,\"IP\",\"CMNET\"\r\n","OK")){
+                    check_send_cmd("AT+EGDCONT=1,\"IP\",\"CMNET\"\r\n","OK");
+                    delay(500);
+                    check_send_cmd("AT+MGPSTS=1\r\n","1");
+                    delay(500);
+                    check_send_cmd("AT+MGPSEPO=1\r\n","1");
+                    delay(500);
+                    check_send_cmd("AT+GETGPS=1\r\n","1");
+                    delay(500);
+                    check_send_cmd("AT+MGPSC=1\r\n","1");
+                    return true;
+                }else{
+                    return false;
+                }
             }else{
                 return false;
             }
@@ -171,37 +171,170 @@ bool  DFRobot_L218::writeFile(char *filename, char *data, Mode mode)
     }
 }
 
-bool  DFRobot_L218::createFolder(char *foldername)
+bool   DFRobot_L218::getPos(void)
 {
-    if(getCommandCounter() == 1){
-        send_cmd("AT+FSMKDIR=\"");
-        send_cmd(foldername);
-        if(check_send_cmd("\"\r\n","OK")){
-            return true;
+    delay(2000);
+    char     posBuffer[200];
+    char     latitude[10]={0};
+    char     longitude[10]={0};
+    char    *pLongitude,*pLatitude;
+    int      latitude_s =0,longitude_s=0;
+    cleanBuffer(posBuffer,200);
+    Serial1.write("AT+GETGPS=\"GNRMC\"\r\n");
+    readBuffer(posBuffer,200);
+  //SerialUSB.println(posBuffer);
+    if(NULL != strstr(posBuffer,",A,")){
+        if(NULL != strstr(posBuffer,",N,")){
+            pLatitude   = strstr(posBuffer,",N,") -  9;
+            latitude_s  = 0;
         }else{
-            return false;
+            pLatitude   = strstr(posBuffer,",S,") -  9;
+            latitude_s  = 1;
         }
+        if(NULL != strstr(posBuffer,",E,")){
+            pLongitude  = strstr(posBuffer,",E,") - 10;
+            longitude_s = 0;
+        }else{
+            pLongitude  = strstr(posBuffer,",W,") - 10;
+            longitude_s = 1;
+        }
+        memcpy(longitude,pLongitude,10);
+        memcpy(latitude ,pLatitude ,10);
+        latitude_m   = (latitude[2] -48)*100000 + (latitude[3] -48)*10000+(latitude[5] -48)*1000 + (latitude[6] -48)*100 +(latitude[7] -48)*10+(latitude[8] -48);
+        latitude_m  /= 600000;
+        latitude_m  +=(latitude[0] -48)*10 +(latitude[1] -48);
+        longitude_m  = (longitude[3] -48)*100000 + (longitude[4] -48)*10000+(longitude[6] -48)*1000 + (longitude[7] -48)*100 +(longitude[8] -48)*10+(longitude[9] -48);
+        longitude_m /= 600000;
+        longitude_m +=(longitude[0] -48)*100 +(longitude[1] -48)*10+(longitude[2] -48);
+        if(latitude_s){
+            latitude_m  = 0 - latitude_m ;
+        }
+        if(longitude_s){
+            longitude_m = 0 - longitude_m;
+        }
+        return true;
     }else{
         return false;
     }
 }
 
-bool  DFRobot_L218::deleteFolder(char *foldername)
+double DFRobot_L218::getLongitude()
 {
-    if(getCommandCounter() == 1){
-        send_cmd("AT+FSRMDIR=\"");
-        send_cmd(foldername);
-        if(check_send_cmd("\"\r\n","OK")){
-            return true;
-        }else{
-            return false;
-        }
+    return  longitude_m;
+}
+
+double DFRobot_L218::getLatitude()
+{
+    return  latitude_m;
+}
+
+bool   DFRobot_L218::check_send_cmd(const char* cmd, const char* resp, unsigned int timeout, unsigned int chartimeout)
+{
+    char SIMbuffer[100];
+    cleanBuffer(SIMbuffer,100);
+    Serial1.write(cmd);
+    readBuffer(SIMbuffer,100,timeout, chartimeout);
+    if(NULL != strstr(SIMbuffer,resp)){
+        return true;
     }else{
         return false;
     }
 }
 
-bool   DFRobot_L218::initPos(void)
+bool   DFRobot_L218::connect(char *server,Protocol ptl,int port)
+{
+    char num[4];
+    char serverIP[100];
+    cleanBuffer(serverIP,100);
+    itoa(port, num, 10);
+    Serial1.write("AT+CIPSTART=\"");
+    if(ptl == TCP){
+        Serial1.write("TCP\",\"");
+    }else if(ptl == UDP){
+        Serial1.write("UDP\",\"");
+    }else{
+        SerialUSB.println("Wrong protocol");
+        return false;
+    }
+    Serial1.write(server);
+    Serial1.write("\",");
+    Serial1.write(num);
+    Serial1.write("\r\n");
+    while(1){
+        while(Serial1.available()){
+            readBuffer(serverIP,100);
+            if(NULL != strstr(serverIP,"ALREADY CONNECT")){
+                return true;
+            }
+            if(NULL != strstr(serverIP,"CONNECT OK")){
+                return true;
+            }
+            if(NULL != strstr(serverIP,"CONNECT FAIL")){
+                return false;
+            }
+        }
+    }
+}
+
+bool   DFRobot_L218::disconnect(void)
+{
+    if(check_send_cmd("AT+CIPSHUT\r\n","OK",1000,3000)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+void   DFRobot_L218::sleepMode(void)
+{
+    digitalWrite(A5,LOW);
+    Serial1.println("at+eslp=1");
+    Serial1.println("at+csclk=1");
+    delay(1500);
+    Serial1.end();
+    Serial1.begin(19200);
+}
+
+void   DFRobot_L218::wakeUp(void)
+{
+    digitalWrite(A5,HIGH);
+}
+
+int    DFRobot_L218::readBuffer(char *buffer, int count, unsigned int timeout, unsigned int chartimeout)
+{
+    int i = 0;
+    unsigned long timerStart, prevChar;
+    timerStart = millis();
+    prevChar = 0;
+    while(1){
+        while(Serial1.available()){
+            buffer[i++] = Serial1.read();
+            prevChar = millis();
+            if(i >= count){
+                return i;
+            }
+        }
+        if(timeout){
+            if((unsigned long) (millis() - timerStart) > timeout*10){
+                break;
+            }
+        }
+        if(((unsigned long) (millis() - prevChar) > chartimeout) && (prevChar != 0)){
+            break;
+        }
+    }
+    Serial1.flush(); 
+    return i;
+}
+
+void   DFRobot_L218::cleanBuffer(char *buffer,int count)
+{
+    for(int i=0; i < count; i++){
+        buffer[i] = '\0';
+    }
+}
+
+bool   DFRobot_L218::initNet(void)
 {
     int  count = 0;
     while(count < 3){
@@ -213,273 +346,141 @@ bool   DFRobot_L218::initPos(void)
         }
     }
     if(count == 3){
-        closeCommand();
         return false;
     }
-    if(check_send_cmd("AT+CSTT=\"CMNET\"\r\n","OK")){
-        if(check_send_cmd("AT+GTPOS=1\r\n","CONNECT OK")){
-            setCommandCounter(2);
+    if(check_send_cmd("AT+CSTT\r\n","OK")){
+        if(check_send_cmd("AT+CIICR\r\n","OK")){
             return true;
         }else{
-            closeCommand();
             return false;
         }
     }else{
-        closeCommand();
         return false;
     }
 }
 
-bool   DFRobot_L218::getPosition(void)
-{
-    char  posBuffer[80];
-    char *pLongitude,*pLatitude;
-    cleanBuffer(posBuffer,80);
-    if((getCommandCounter() == 2) || (getCommandCounter() == 5)){
-//        delay(500);
-        send_cmd("AT+GTPOS=2\r\n");
-        readBuffer(posBuffer,80);
-        if(NULL != strstr(posBuffer,"+GTPOS")){
-            if(NULL != strstr(posBuffer,"$")){
-                setCommandCounter(3);
-            }else if(NULL != strstr(posBuffer,"-1")){
-                setCommandCounter(6);
-            }else if(NULL != strstr(posBuffer,"-2")){
-                setCommandCounter(7);
-            }else if(NULL != strstr(posBuffer,"-3")){
-                setCommandCounter(8);
-            }else if(NULL != strstr(posBuffer,"-4")){
-                setCommandCounter(9);
-            }else if(NULL != strstr(posBuffer,"-5")){
-                setCommandCounter(10);
-            }else if(NULL != strstr(posBuffer,"-6")){
-                setCommandCounter(11);
-            }else if(NULL != strstr(posBuffer,"-7")){
-                setCommandCounter(12);
-            }
-        }else{
-            closeCommand();
-            return false;
-        }
-    }else{
-        closeCommand();
-        return false;
-    }
-    if(getCommandCounter() == 3){
-        pLongitude = strstr(posBuffer,":");
-        pLatitude  = strstr(posBuffer,",");
-        memcpy(longitude,pLongitude+2,7);
-        memcpy(latitude, pLatitude+1 ,7);
-        setCommandCounter(4);
-        return true;
-    }
-}
-
-char*   DFRobot_L218::getLongitude(void)
-{
-    if((getCommandCounter() == 4) || (getCommandCounter() == 5)){
-        setCommandCounter(5);
-        return longitude;
-    }else if(getCommandCounter() == 6 ){
-        setCommandCounter(2);
-        return "Error:Network busy";
-    }else if(getCommandCounter() == 7 ){
-        setCommandCounter(2);
-        return "Error:Not ready";
-    }else if(getCommandCounter() == 8 ){
-        setCommandCounter(2);
-        return "Error:Network error";
-    }else if(getCommandCounter() == 9 ){
-        setCommandCounter(2);
-        return "Error:Timeout";
-    }else if(getCommandCounter() == 10){
-        setCommandCounter(2);
-        return "Error:Unack";
-    }else if(getCommandCounter() == 11){
-        setCommandCounter(2);
-        return "Error:Network exists";
-    }else if(getCommandCounter() == 12){
-        setCommandCounter(2);
-        return "Error:WIFI information error";
-    }else{
-        return "Error";
-    }
-}
-
-char*   DFRobot_L218::getLatitude(void)
-{
-    if((getCommandCounter() == 4) || (getCommandCounter() == 5)){
-        setCommandCounter(5);
-        return latitude;
-    }else if(getCommandCounter() == 6 ){
-        setCommandCounter(2);
-        return "Error:Network busy";
-    }else if(getCommandCounter() == 7 ){
-        setCommandCounter(2);
-        return "Error:Not ready";
-    }else if(getCommandCounter() == 8 ){
-        setCommandCounter(2);
-        return "Error:Network error";
-    }else if(getCommandCounter() == 9 ){
-        setCommandCounter(2);
-        return "Error:Timeout";
-    }else if(getCommandCounter() == 10){
-        setCommandCounter(2);
-        return "Error:Unack";
-    }else if(getCommandCounter() == 11){
-        setCommandCounter(2);
-        return "Error:Network exists";
-    }else if(getCommandCounter() == 12){
-        setCommandCounter(2);
-        return "Error:WIFI information error";
-    }else{
-        return "Error";
-    }
-}
-
-bool  DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot_key)
+bool   DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot_key)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">")){
-        char     MQTThead[10]={0x00,0x04,0x4d,0x51,0x54,0x54,0x04,0xc2,0x0b,0xb8};
-        
-        char MQTTbuff[50]={0};
-        MQTTbuff[0] = 0x10;
-        send_buff(MQTTbuff,1);
+        char M0buffer[50]   = {0};
+        char MQTThead[10]={0x00,0x04,0x4d,0x51,0x54,0x54,0x04,0xc2,0x0b,0xb8};
+        Serial1.write(0x10);
         int leng = 10;
-        leng += strlen(iot_client)+2;
+        leng += strlen(iot_key)     +2;
+        leng += strlen(iot_client)  +2;
         leng += strlen(iot_username)+2;
-        leng += strlen(iot_key)+2;
-        MQTTbuff[0] = leng ;
-        send_buff(MQTTbuff,1);
-        send_buff(MQTThead,10);
-        send_buff(MQTThead,1);
-        MQTTbuff[0]=strlen(iot_client);
-        send_buff(MQTTbuff,1);
-        send_cmd(iot_client);
-        send_buff(MQTThead,1);
-        MQTTbuff[0]=strlen(iot_username);
-        send_buff(MQTTbuff,1);
-        send_cmd(iot_username);
-        send_buff(MQTThead,1);
-        MQTTbuff[0]=strlen(iot_key);
-        send_buff(MQTTbuff,1);
-        send_cmd(iot_key);
+        Serial1.write(leng);
+        for(int i=0;i<10;i++){
+            Serial1.write(MQTThead[i]);
+        }
+        Serial1.write(MQTThead[0]);
+        Serial1.write(strlen(iot_client));
+        Serial1.print(iot_client);
+        Serial1.write(MQTThead[0]);
+        Serial1.write(strlen(iot_username));
+        Serial1.print(iot_username);
+        Serial1.write(MQTThead[0]);
+        Serial1.write(strlen(iot_key));
+        Serial1.print(iot_key);
+        Serial1.write(0x1a);
+        readBuffer(M0buffer,50,5000);
+        return true;
+    }
+    return false;
+}
+
+bool   DFRobot_L218::MQTTsend(char* iot_topic, char* iot_data)
+{
+        char M0buffer[50]   = {0};
+        Serial1.print("AT+CIPSEND\r\n");
+        readBuffer(M0buffer,50,5000);
+    if(NULL != strstr(M0buffer,">")){
+        char     MQTTdata[2]={0x00,0x04};
+        int leng = 0;
+        Serial1.write(0x32);
+        leng = strlen(iot_topic)+strlen(iot_data)+4;
+        Serial1.write(leng);
+        Serial1.write(MQTTdata[0]);
+        Serial1.write(strlen(iot_topic));
+        Serial1.print(iot_topic);
+        for(int j=0;j<2;j++){
+            Serial1.write(MQTTdata[j]);
+        }
+        Serial1.print(iot_data);
+        Serial1.write(0x1a);
+        readBuffer(M0buffer,50,5000);
+        return true;
+    }else{
+        return false;
+    }
+}
+
+bool   DFRobot_L218::MQTTsubscribe(char* iot_topic)
+{
+    if(check_send_cmd("AT+CIPSEND\r\n",">",900,5000)){
+        char     MQTTbuff[10]={0};
+        MQTTbuff[0] = 0x82;
+        MQTTbuff[1] = strlen(iot_topic)+5;
+        MQTTbuff[3] = 0x0a;
+        MQTTbuff[5] = strlen(iot_topic);
+        Serial1.write(MQTTbuff,6);
+        Serial1.write(iot_topic);
+        MQTTbuff[0] = 0x01;
+        Serial1.write(MQTTbuff,1);
         if(check_send_cmd("","CLOSED")){
             return false;
         }else{
-            setCommandCounter(20);
+            return true;
+        }
+    }else{
+        return false;
+    }
+}
+
+bool   DFRobot_L218::MQTTunsubscribe(char* iot_topic)
+{
+    if(check_send_cmd("AT+CIPSEND\r\n",">")){
+        char     MQTTbuff[10]={0};
+        MQTTbuff[0] = 0xa2;
+        MQTTbuff[1] = strlen(iot_topic)+4;
+        MQTTbuff[3] = 0x0a;
+        MQTTbuff[5] = strlen(iot_topic);
+        Serial1.write(MQTTbuff,6);
+        Serial1.write(iot_topic);
+        if(check_send_cmd("","CLOSED")){
+            return false;
+        }else{
+            return true;
+        }
+    }else{
+        return false;
+    }
+}
+
+bool   DFRobot_L218::MQTTrecv(char* iot_topic, char* buf, int maxlen)
+{
+    char   MQTTbuff[maxlen+30];
+    char  *p; 
+    cleanBuffer(MQTTbuff,maxlen+30);
+    int i = readBuffer(MQTTbuff,maxlen+30);
+    for(int j=0;j<i;j++){
+        if(NULL != (p = strstr(MQTTbuff+j,iot_topic))){
+            memcpy(buf,p+strlen(iot_topic),maxlen+30);
             return true;
         }
     }
     return false;
 }
 
-bool  DFRobot_L218::MQTTsend(char* iot_topic, char* iot_data)
-{
-    if(getCommandCounter() == 20){
-        if(check_send_cmd("AT+CIPSEND\r\n",">")){
-            char     MQTTdata[2]={0x00,0x04};
-            char     MQTTbuff[50]={0};
-            MQTTbuff[0] = 0x32;
-            send_buff(MQTTbuff,1);
-            MQTTbuff[0] = strlen(iot_topic)+strlen(iot_data)+4;
-            send_buff(MQTTbuff,2);
-            MQTTbuff[0] = strlen(iot_topic);
-            send_buff(MQTTbuff,1);
-            send_cmd(iot_topic);
-            send_buff(MQTTdata,2);
-            send_cmd(iot_data);
-            if(check_send_cmd("","CLOSED")){
-                return false;
-            }else{
-                return true;
-            }
-        }else{
-            return false;
-        }
-    }else{
-        return false;
-    }
-}
-
-bool  DFRobot_L218::MQTTsubscribe(char* iot_topic)
-{
-    if(getCommandCounter() == 20){
-        if(check_send_cmd("AT+CIPSEND\r\n",">")){
-            char     MQTTbuff[10]={0};
-            MQTTbuff[0] = 0x82;
-            MQTTbuff[1] = strlen(iot_topic)+5;
-            MQTTbuff[3] = 0x0a;
-            MQTTbuff[5] = strlen(iot_topic);
-            send_buff(MQTTbuff,6);
-            send_cmd(iot_topic);
-            MQTTbuff[0] = 0x01;
-            send_buff(MQTTbuff,1);
-            if(check_send_cmd("","CLOSED")){
-                return false;
-            }else{
-                setCommandCounter(21);
-                return true;
-            }
-        }
-    }else{
-        return false;
-    }
-}
-
-bool  DFRobot_L218::MQTTunsubscribe(char* iot_topic)
-{
-    if(getCommandCounter() == 21){
-        if(check_send_cmd("AT+CIPSEND\r\n",">")){
-            char     MQTTbuff[10]={0};
-            MQTTbuff[0] = 0xa2;
-            MQTTbuff[1] = strlen(iot_topic)+4;
-            MQTTbuff[3] = 0x0a;
-            MQTTbuff[5] = strlen(iot_topic);
-            send_buff(MQTTbuff,6);
-            send_cmd(iot_topic);
-            if(check_send_cmd("","CLOSED")){
-                return false;
-            }else{
-                return true;
-                setCommandCounter(20);
-            }
-        }else{
-            return false;
-        }
-    }
-}
-
-bool  DFRobot_L218::MQTTrecv(char* iot_topic, char* buf, int maxlen)
-{
-    if(getCommandCounter() == 21){
-        char   MQTTbuff[maxlen+30];
-        char  *p; 
-        cleanBuffer(MQTTbuff,maxlen+30);
-        int i = readBuffer(MQTTbuff,maxlen+30);
-        for(int j=0;j<i;j++){
-            if(NULL != (p = strstr(MQTTbuff+j,iot_topic))){
-                memcpy(buf,p+strlen(iot_topic),maxlen+30);
-                return true;
-            }
-        }
-        return false;
-    }else{
-        return false;
-    }
-}
-
-bool  DFRobot_L218::MQTTdisconnect(void)
+bool   DFRobot_L218::MQTTdisconnect(void)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">")){
         char     MQTTdata[2]={0xe0,0x00};
-        send_buff(MQTTdata,2);
-        if(check_send_cmd("","CLOSED")){
-            return true;
-        }else{
-            return false;
-        }
+        Serial1.write(MQTTdata,2);
+        Serial1.write(0x1a);
+        return true;
     }else{
         return false;
     }
 }
+

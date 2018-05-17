@@ -7,8 +7,7 @@
 #######################################
 
 DFRobot_L218	KEYWORD1
-DFL218GetPosition	KEYWORD1
-DFL218File	KEYWORD1
+MPU6050	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -16,7 +15,7 @@ DFL218File	KEYWORD1
 
 begin	KEYWORD2
 initPos	KEYWORD2
-getPosition	KEYWORD2
+getPos	KEYWORD2
 getLongitude	KEYWORD2
 getLatitude	KEYWORD2
 initFile	KEYWORD2
@@ -26,6 +25,7 @@ createFile	KEYWORD2
 readFile	KEYWORD2
 deleteFile	KEYWORD2
 writeFile	KEYWORD2
+disconnect	KEYWORD2
 createFolder	KEYWORD2
 deleteFolder	KEYWORD2
 MQTTconnect	KEYWORD2
@@ -33,6 +33,18 @@ MQTTsend	KEYWORD2
 MQTTsubscribe	KEYWORD2
 MQTTunsubscribe	KEYWORD2
 MQTTrecv	KEYWORD2
+MQTTdisconnect	KEYWORD2
+initNet	KEYWORD2
+wakeUp	KEYWORD2
+turnON	KEYWORD2
+startMPU6050	KEYWORD2
+stopMPU6050	KEYWORD2
+sleepMode	KEYWORD2
+beginSMS	KEYWORD2
+sendSMS	KEYWORD2
+connect	KEYWORD2
+check_SIMcard	KEYWORD2
+check_TurnON	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -40,3 +52,12 @@ MQTTrecv	KEYWORD2
 
 Hex	LITERAL1
 Normal	LITERAL1
+Button	LITERAL1
+Charge	LITERAL1
+Done	LITERAL1
+Ring	LITERAL1
+power	LITERAL1
+MPU	LITERAL1
+Reset	LITERAL1
+Led	LITERAL1
+WK_UP	LITERAL1

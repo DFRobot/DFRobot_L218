@@ -15,9 +15,10 @@ Provides an Arduino library for L218
 
 The library use for L218 as following function
 
-#### Get time
+#### MPU6050 attitude sensor
+#### Send short message
 #### Get current position
-#### Independent file system
+#### 
 
 ## Methods
 ```C++
@@ -30,6 +31,56 @@ The library use for L218 as following function
  *     false  Failed
  */
 bool init(void);
+
+/*
+ * @brief Turn ON L218
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool tureON(void);
+
+/*
+ * @brief Check if L218 is turn on
+ *
+ * @return
+ *     ture   Turn ON 
+ *     false  Turn OFF
+ */
+bool check_TurnON(void);
+
+/*
+ * @brief Begin to send short message
+ *
+ * @param phoneNumber Target number for send short message
+ * @return
+ *     ture   Turn ON 
+ *     false  Turn OFF
+ */
+bool beginSMS(const char* phoneNumber);
+
+/*
+ * @brief Send short message
+ *
+ * @param content The message content
+ *
+ * @return
+ *     ture   Turn ON 
+ *     false  Turn OFF
+ */
+bool sendSMS(const char* content);
+
+/*
+ * @brief Make a phone call
+ *
+ * @param phoneNumber Target number
+ *
+ * @return
+ *     ture   Turn ON 
+ *     false  Turn OFF
+ */
+bool voiceCall(const char* phoneNumber);
 
 /*
  * @brief Init L218 positioning module
@@ -47,7 +98,7 @@ bool initPos(void);
  *     ture   Success
  *     false  Failed
  */
-bool getPosition(void);
+bool getPos(void);
 
 /*
  * @brief Get longitude
@@ -55,7 +106,7 @@ bool getPosition(void);
  * @return
  *     Longitude value
  */
-char* getLongitude(void);
+double getLongitude(void);
 
 /*
  * @brief Get latitude
@@ -63,121 +114,16 @@ char* getLongitude(void);
  * @return
  *     Latitude value
  */
-char* getLatitude(void);
+double getLatitude(void);
 
 /*
- * @brief Init L218 file system
+ * @brief Init internet
  *
  * @return
  *     ture   Success
  *     false  Failed
  */
-bool initFile(void);
-
-/*
- * @brief Get file list
- *
- * @return
- *     The list of all file
- */
-char* getList(void);
-
-/*
- * @brief Get specified folder's list
- *
- * @param 
- *    *foldername   The name of specified folder
- *
- * @return
- *     The list of specified folder
- */
-char* getList(char *foldername);
-
-/*
- * @brief Get disk space information
- *
- * @return
- *     The size of disk space
- */
-char* getSpace(void);
-
-/*
- * @brief Create a new file
- *
- * @param 
- *    *filename   The name of new file
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool createFile(char *filename);
-
-/*
- * @brief Create a new folder
- *
- * @param 
- *    *foldername   The name of new folder
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool createFolder(char *foldername);
-
-/*
- * @brief Read a file data
- *
- * @param 
- *     *filename   The name of specified file
- *      offset     Offset from the file beginning Passible value: 0-65536, default value: 0
- *      len        The length of data to be read Passible value: 0-1024, default value: 50
- *      mode       Read mode Passible value: Normal Hex, default value: Normal
- *
- * @return
- *     The data of specified file
- */
-char* readFile(char *filename, int offset, int len, Mode mode);
-
-/*
- * @brief Delete specified file
- *
- * @param
- *    *filename   The name of specified file
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool deleteFile(char *filename);
-
-/*
- * @brief Delete specified folder
- *
- * @param
- *    *folder   The name of specified folder
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool deleteFolder(char *foldername);
-
-/*
- * @brief Write data to specified file
- *
- * @note  Folder must be empty
- *
- * @param
- *    *filename   The name of specified file
- *    *data       The input data
- *     mode       Write mode Passible value :Normal Hex, default value: Normal
- *
- * @return
- *     ture   Success
- *     false  Failed
- */
-bool writeFile(char *filename, char *data, Mode mode);
+bool initNet(void);
 
 /*
  * @brief MQTT connect request
@@ -208,53 +154,44 @@ bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
 bool MQTTsend(char* iot_topic, char* iot_data);
 
 /*
- * @brief MQTT subscribe request
+ * @brief Enable MPU6050 attitude sensor
  *
- * @param iot_topic The topic you want to subscribe
- *
- * @return
- *     ture   Success
- *     false  Failed
  */
-bool MQTTsubscribe(char* iot_topic);
+void startMPU6050(void);
 
 /*
- * @brief Receive data from subscribed topic
+ * @brief Disable MPU6050 attitude sensor
  *
- * @param iot_topic The subscribed topic
- *
- * @param buff      The buffer to store data
- *
- * @param maxlen    The maximum length of the buffer
- *
- * @return
- *     ture   Success
- *     false  Failed
  */
-bool     MQTTrecv(char* iot_topic, char* buff,int maxlen);
+void stopMPU6050(void);
 
 /*
- * @brief MQTT unsubscribe request
+ * @brief LED blink
  *
- * @param iot_topic The topic you want to unsubscribe
- *
- * @return
- *     ture   Success
- *     false  Failed
+ * @param times     How many times LED blink
+ *        interval  LED blink interval
  */
-bool MQTTunsubscribe(char* iot_topic);
+void blink(int times , int interval);
+
+/*
+ * @brief L218 enter sleep mode
+ *
+ */
+void sleepMode(void);
+
+/*
+ * @brief Wake up L218
+ *
+ */
+void wakeUp(void);
 
 ```
 
 ## Depends
 
-Projects           |                     URL                       | Remarks
------------------- | :-------------------------------------------: | -----------
-DFRobot_SIM        |  https://github.com/DFRobot/DFRobot_SIM       | must
-
 ## History
 
-- data 2017-11-22
+- data 2018-5-11
 - version V0.1
 
 ## Credits
