@@ -51,55 +51,59 @@ void ring()
 
 void setup(){
     SerialUSB.begin(115200);
-    l218.init();
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);  //L218 boot interrupt
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);  //Battery charge interrupt
+    l218.init();                                                //Initialization
+
+  //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
+    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);
+
+  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
+    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);
 }
 
 void loop()
 {
     delay(5000);
-    if(l218.check_TurnON()){                                            //Check if L218 start
+    if(l218.check_TurnON()){                                    //Check if L218 start
         SerialUSB.println("");
         SerialUSB.println("Turn ON !");
-        if(l218.check_SIMcard()){                                       //Check SIM card
+        if(l218.check_SIMcard()){                               //Check SIM card
             SerialUSB.println("Card Init!");
         }else{
             SerialUSB.println("NO SIM card");
             return;
         }
-        if(l218.initNet()){                                             //Init network functions
+        if(l218.initNet()){                                     //Init network functions
            SerialUSB.println("NET ONLINE!");
            delay(5000);
         }else{
             SerialUSB.println("NO NET");
             return;
         }
-        if(l218.connect(serverIP,TCP,1883)){                            //Connect to server
+        if(l218.connect(serverIP,TCP,1883)){                    //Connect to server
             SerialUSB.println("connected");
         }else{
             SerialUSB.println("disconnect");
             return;
         }
-        if(l218.MQTTconnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){          //MQTT connect requst
+        if(l218.MQTTconnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){  //MQTT connect requst
             SerialUSB.println("MQTT connected");
             delay(2000);
         }else{
             SerialUSB.println("MQTT connect failed");
             return;
         }
-        if(l218.MQTTsend(IOT_TOPIC,"L218test")){                        //MQTT send data
+        if(l218.MQTTsend(IOT_TOPIC,"L218test")){                //MQTT send data
             SerialUSB.println("Send OK");
         }else{
             SerialUSB.println("MQTT fail to send");
             return;
         }
-        if(l218.MQTTdisconnect()){
+        if(l218.MQTTdisconnect()){                              //MQTT disconnect requst
             SerialUSB.println("MQTT disconnected");
         }else{
             SerialUSB.println("Fail to disconnect");
         }
-        if(l218.disconnect()){
+        if(l218.disconnect()){                                  //Disconnect from server
             SerialUSB.println("Server disconnected");
         }else{
             SerialUSB.println("Fail to disconnect");

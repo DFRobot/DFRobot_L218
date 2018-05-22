@@ -48,25 +48,28 @@ void ring()
 void setup(){
     SerialUSB.begin(115200);
     l218.init();
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);     //L218 boot interrupt
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);     //Battery charge interrupt
+
+  //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
+    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);
+
+  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
+    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);
 }
 
 void loop(){
     delay(5000);
-    if(l218.check_TurnON()){                                               //Check if L218 start
+    if(l218.check_TurnON()){                                     //Check if L218 start
         SerialUSB.println("Turn ON !");
-        attachInterrupt( digitalPinToInterrupt(Ring)  , ring   , CHANGE);  //Ring interrupt
-        if(l218.check_SIMcard()){                                          //Check SIM card
-              SerialUSB.println("Card ready");
-              delay(2000);
-              SerialUSB.println("Input phone number:");
-              readSerial(phoneNum);
+        if(l218.check_SIMcard()){                                //Check SIM card
+            SerialUSB.println("Card ready");
+            delay(2000);
+            SerialUSB.println("Input phone number:");
+            readSerial(phoneNum);
         }else{
             SerialUSB.println("NO Card");
             return;
         }
-        if(l218.beginSMS(phoneNum)){                                       //Get phone number
+        if(l218.beginSMS(phoneNum)){                             //Get phone number
             SerialUSB.println("OK");
             SerialUSB.println("Enter the message content: ");
             readSerial(message);
@@ -74,7 +77,7 @@ void loop(){
             SerialUSB.println("Fail");
             return;
         }
-        if(l218.sendSMS(message)){                                         //Get message
+        if(l218.sendSMS(message)){                               //Get message
             SerialUSB.println("Send OK");
         }else{
             SerialUSB.println("Fail to send");

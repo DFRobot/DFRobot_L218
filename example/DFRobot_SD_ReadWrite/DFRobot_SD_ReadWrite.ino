@@ -1,6 +1,7 @@
  /*
   * File  : DFRobot_SD_Readrite.ino
-  * Brief : This example open SD card file write data to it and read data from it
+  * Brief : This example shows how to read and write data to and from an SD card file
+  * Note  : All functions in the SD library can be used here with chipSelect = 11
   */
 
 #include <SPI.h>

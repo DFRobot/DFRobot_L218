@@ -5,7 +5,6 @@ Provides an Arduino library for L218
 
 * [Summary](#summary)
 * [Methods](#methods)
-* [Depends](#depends)
 * [History](#history)
 * [Credits](#credits)
 <snippet>
@@ -18,6 +17,7 @@ The library use for L218 as following function
 #### MPU6050 attitude sensor
 #### Send short message
 #### Get current position
+#### SD card 
 #### 
 
 ## Methods
@@ -187,12 +187,10 @@ void wakeUp(void);
 
 ```
 
-## Depends
-
 ## History
 
 - data 2018-5-11
-- version V0.1
+- version V1.0
 
 ## Credits
 

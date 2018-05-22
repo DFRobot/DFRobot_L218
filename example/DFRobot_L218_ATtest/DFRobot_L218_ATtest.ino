@@ -4,8 +4,13 @@
   * Brief : This example use the serial port to send AT command to control the L218
   *         Press the button when the net light blinks L218 start
   *         With initialization completed, we can enter AT command to L218 directly
-  * AT command list:
-  *
+  *  Common AT commands : 
+  *         AT+CPIN? : Check SIM card
+  *         AT+CSQ   : Check signal quality
+  *         AT+CGATT?: Check net attached state
+  *         AT+CSTT  : Start net connect task
+  *         AT+CIFSR : Get local IP
+  *         Get the AT command table in Resource folder
   * Note  : The AT command must end with CRLF
   */
 
@@ -44,10 +49,17 @@ void ring()
 
 void setup(){
     SerialUSB.begin(115200);
+  //Initialization
     l218.init();
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on,  CHANGE);  //L218 boot interrupt
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge ,  CHANGE);  //Battery charge interrupt
-    attachInterrupt(digitalPinToInterrupt(Ring)   , ring    , CHANGE);  //Ring interrupt
+
+  //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
+    attachInterrupt(digitalPinToInterrupt(Button) , turn_on,  CHANGE);
+
+  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
+    attachInterrupt(digitalPinToInterrupt(Charge) , charge ,  CHANGE);
+
+  //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
+    attachInterrupt(digitalPinToInterrupt(Ring)   , ring    , CHANGE);
 }
 
 void loop(){

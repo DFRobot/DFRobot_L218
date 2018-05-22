@@ -5,8 +5,13 @@
   *         With initialization completed, we can enter AT command to L218 directly
   *         Press button enter the sleep mode or wake up L218 
   *         AT command is invalid after entering sleep mode
-  * AT command list:
-  *
+  *  Common AT commands : 
+  *         AT+CPIN? : Check SIM card
+  *         AT+CSQ   : Check signal quality
+  *         AT+CGATT?: Check net attached state
+  *         AT+CSTT  : Start net connect task
+  *         AT+CIFSR : Get local IP
+  *         Get the AT command table in Resource folder
   * Note  : The AT command must end with CRLF
   */
 
@@ -26,13 +31,15 @@ void charge()
 
 void setup(){
     SerialUSB.begin(115200);
-    l218.init();
+    l218.init();                               //Initialization
     SerialUSB.println("Turn ON L218");
-    if(l218.turnON()){
+    if(l218.turnON()){                         //Turn ON L218
         SerialUSB.println("Turn ON !");
     }else{
         return;
     }
+
+  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(Charge) , charge , CHANGE);
 }
 
@@ -48,12 +55,12 @@ void loop(){
         delay(50);
         if(!digitalRead(Button)){
             if(s_mode){
-                l218.sleepMode();
+                l218.sleepMode();              //L218 enter sleep mode
                 SerialUSB.println("Enter sleep mode");
                 s_mode = 0;
                 while(!digitalRead(Button));
             }else{
-                l218.wakeUp();
+                l218.wakeUp();                 //Wake up L218
                 SerialUSB.println("Wake UP!");
                 s_mode = 1;
                 while(!digitalRead(Button));

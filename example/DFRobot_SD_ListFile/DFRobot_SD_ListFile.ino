@@ -1,6 +1,7 @@
  /*
   * File  : DFRobot_SD_ListFile.ino
-  * Brief : This example list SD card file
+  * Brief : This example shows how print out the files in a directory on a SD card
+  * Note  : All functions in the SD library can be used here with chipSelect = 11
   */
 
 #include <SPI.h>
@@ -11,7 +12,7 @@ const int chipSelect = 11;
 
 void setup() {
     SerialUSB.begin(9600);
-    while (!SerialUSB) {
+    while(!SerialUSB){
         ;
     }
     SerialUSB.print("Initializing SD card...");
