@@ -7,14 +7,12 @@
 #include <SPI.h>
 #include <SD.h>
 
-File myFile;
+File      myFile;
 const int chipSelect = 11;
 
 void setup() {
     SerialUSB.begin(9600);
-    while(!SerialUSB){
-        ;
-    }
+    while(!SerialUSB);
     SerialUSB.print("Initializing SD card...");
     if(!SD.begin(chipSelect)){
         SerialUSB.println("initialization failed!");

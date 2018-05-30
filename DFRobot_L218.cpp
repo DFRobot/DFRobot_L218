@@ -92,9 +92,9 @@ bool   DFRobot_L218::checkSIMcard(void)
 void   DFRobot_L218::blink(int times , int interval)
 {
     while(times){
-        digitalWrite(Led , HIGH);
+        digitalWrite(13 , HIGH);
         delay(interval);
-        digitalWrite(Led , LOW );
+        digitalWrite(13 , LOW );
         delay(interval);
         times--;
     }

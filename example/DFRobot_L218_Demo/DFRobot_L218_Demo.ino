@@ -1,17 +1,26 @@
  /*
   * File   : DFRobot_Demo.ino
-  * Power : L218 powered by 3.7V lithium battery
-  * Brief  : This example use L218 get position tempeeraturw then store the data in SD card
-  *          And send the data to Net whlie MQTT
+  * Power  : L218 powered by 3.7V lithium battery
+  * Brief  : This example use L218 get position temperature then send the data to Net whlie MQTT
+  *          And store the data in SD card
   * Note   : The tracker function only available in outdoor
   */
 
 #include <MPU6050.h>
 #include <DFRobot_L218.h>
 #include <avr/dtostrf.h>
+#include <SPI.h>
+#include <SD.h>
 
 MPU6050          mpu;
-DFRobot_L218    l218;
+DFRobot_L218     l218;
+File             myFile;
+const int        chipSelect = 11;
+
+#define  BUTTON    3
+#define  CHARGE    6
+#define  DONE      7
+#define  POWER     9
 
 #define serverIP        "iot.dfrobot.com.cn"
 #define IOT_CLIENT      " CLIENT NAME "
@@ -21,19 +30,19 @@ DFRobot_L218    l218;
 
 void turn_on()  
 {  
-    if( digitalRead(Button) == LOW ){
+    if( digitalRead(BUTTON) == LOW ){
         tone(4,2000);
-        digitalWrite(power,HIGH);
+        digitalWrite(POWER,HIGH);
     }else{
         noTone(4);
-        digitalWrite(power,LOW);
+        digitalWrite(POWER,LOW );
     }
 }
 
 void charge()
 {
-    if(digitalRead(Done)){
-        if( digitalRead(Charge) == LOW ){
+    if(digitalRead(DONE)){
+        if( digitalRead(CHARGE) == LOW ){
             tone(4,4000,500);
         }
     }
@@ -41,17 +50,23 @@ void charge()
 
 void setup(){
     SerialUSB.begin(115200);
+    while(!SerialUSB);
     l218.init();                                                //Initialization
-
+    SerialUSB.print("Initializing SD card...");
+    if(!SD.begin(chipSelect)){                                  //Init SD card
+        SerialUSB.println("initialization failed!");
+        return;
+    }
+    SerialUSB.println("initialization done.");
   //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(BUTTON) , turn_on , CHANGE);
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE) , charge  , CHANGE);
 }
 
 void loop(){
-    if(l218.checkTurnON()){
+    if(l218.checkTurnON()){                                     //Check if L218 start
         double  Longitude,Latitude;
         SerialUSB.println("Turn ON !");
         delay(500);
@@ -62,7 +77,7 @@ void loop(){
             SerialUSB.println("Not init position");
             return;
         }
-         while(1){
+        while(1){
             delay(500);
             if(l218.getPos()){                                  //Get location information
                 SerialUSB.println("Get position");
@@ -77,21 +92,20 @@ void loop(){
                 SerialUSB.println("Not position");
             }               
         }
-       l218.startMPU6050();
+        l218.startMPU6050();                                    //Enable MPU6050
         SerialUSB.println("Initialize MPU6050");
+        //Init MPU6050
         while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)){
             SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
             delay(500);
         }
         float temp = mpu.readTemperature();
-        SerialUSB.print(" Temp = ");
-        SerialUSB.print(temp);
-        SerialUSB.println(" *C");
+        SerialUSB.print("Temperature = ");
         delay(500);
-        l218.stopMPU6050();
+        l218.stopMPU6050();                                     //Disable MPU6050
         char  L218buffer[80] = {0};
-        char   latitude[30];
-        char   longitude[30];
+        char    latitude[30] = {0};
+        char   longitude[30] = {0};
         char temperature[15] = {0};
         dtostrf(temp      , 4 , 2 , temperature);
         dtostrf(Longitude , 8 , 5 , longitude  );
@@ -103,7 +117,6 @@ void loop(){
         strcat(L218buffer," Temperature: ");
         strcat(L218buffer,temperature);
         delay(500);
-        SerialUSB.print("L218buffer = ");
         SerialUSB.println(L218buffer);
         if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
@@ -113,8 +126,8 @@ void loop(){
             return;
         }
         if(l218.initNetwork()){                                 //Init network functions
-           SerialUSB.println("NET ONLINE!");
-           delay(2000);
+            SerialUSB.println("NET ONLINE!");
+            delay(2000);
         }else{
             SerialUSB.println("NO NET");
             return;
@@ -147,6 +160,15 @@ void loop(){
             SerialUSB.println("Server disconnected");
         }else{
             SerialUSB.println("Fail to disconnect");
+        }
+        myFile = SD.open("data.txt", FILE_WRITE);               //Open SD card file in write mode
+        if(myFile){
+            SerialUSB.print("Writing to test.txt...");
+            myFile.println(L218buffer);                         //Write data to file
+            myFile.close();                                     //Save data and close file
+            SerialUSB.println("done.");
+        }else{
+            SerialUSB.println("error opening test.txt");
         }
     }else{
         SerialUSB.println("Please Turn ON L218");

@@ -6,17 +6,6 @@
 #include <Wire.h>
 #include <stdio.h>
 
-#define  Button    3
-#define  Charge    6
-#define  Done      7
-#define  Ring      8
-#define  power     9
-#define  MPU      12
-#define  Reset    A3
-#define  Led      13
-#define  WK_UP    A5
-
-
 #define  DEFAULT_TIMEOUT               5
 #define  DEFAULT_INTERCHAR_TIMEOUT     500
 

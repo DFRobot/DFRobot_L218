@@ -10,13 +10,15 @@
 MPU6050       mpu;
 DFRobot_L218  l218;
 
+#define  CHARGE    6
+
 boolean ledState           = false;
 boolean freefallDetected   = false;
 int     freefallBlinkCount = 0;
 
-void charge()
+void Charge()
 {  
-    if( digitalRead(Charge) == LOW ){
+    if( digitalRead(CHARGE) == LOW ){
         tone(4,4000,500);
     }
 }
@@ -27,7 +29,7 @@ void setup()
     while(!SerialUSB);
     l218.init();
     l218.startMPU6050();
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE) , Charge , CHANGE);
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_16G)){
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");

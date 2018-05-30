@@ -2,7 +2,7 @@
   * File  : DFRobot_L218_ATtest.ino
   * Power : L218 powered by 3.7V lithium battery
   * Brief : This example use the serial port to send AT command to control the L218
-  *         Press the button when the net light blinks L218 start
+  *         Press the BUTTON when the net light blinks L218 start
   *         With initialization completed, we can enter AT command to L218 directly
   *  Common AT commands : 
   *         AT+CPIN? : Check SIM card
@@ -18,27 +18,35 @@
 
 DFRobot_L218  l218;
 
+#define  BUTTON    3
+#define  CHARGE    6
+#define  DONE      7
+#define  RING      8
+#define  POWER     9
+
 void turn_on()
 {  
-    if( digitalRead(Button) == LOW ){
+    if( digitalRead(BUTTON) == LOW ){
         tone(4,2000);
-        digitalWrite(power,HIGH);
+        digitalWrite(POWER,HIGH);
     }else{
         noTone(4);
-        digitalWrite(power,LOW);
+        digitalWrite(POWER,LOW );
     }
 }
 
 void charge()
-{  
-    if( digitalRead(Charge) == LOW ){
-        tone(4,4000,500);
+{
+    if(digitalRead(DONE)){
+        if( digitalRead(CHARGE) == LOW ){
+            tone(4,4000,500);
+        }
     }
 }
 
 void ring()
 {
-    if( digitalRead(Ring) == LOW ){
+    if( digitalRead(RING) == LOW ){
         tone(4,8000);
         SerialUSB.println("Ring ! ! !");
     }else{
@@ -49,20 +57,23 @@ void ring()
 
 void setup(){
     SerialUSB.begin(115200);
+    while(!SerialUSB);
   //Initialization
     l218.init();
 
-  //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on,  CHANGE);
+  //L218 boot interrupt. Press the BUTTON for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON until the NET LED light off L218 turns off.
+    attachInterrupt(digitalPinToInterrupt(BUTTON) , turn_on,  CHANGE);
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge ,  CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE) , charge ,  CHANGE);
+
+  //Check if L218 start
     while(!l218.checkTurnON()){
         SerialUSB.println("Please Turn ON L218");
         delay(3000);
     }
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
-    attachInterrupt(digitalPinToInterrupt(Ring)   , ring    , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(RING)   , ring    , CHANGE);
 }
 
 void loop(){

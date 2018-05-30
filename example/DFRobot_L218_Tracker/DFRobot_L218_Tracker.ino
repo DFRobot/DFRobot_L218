@@ -13,21 +13,26 @@
 
 DFRobot_L218  l218;
 
+#define  BUTTON    3
+#define  CHARGE    6
+#define  DONE      7
+#define  POWER     9
+
 void turn_on()
 {  
-    if( digitalRead(Button) == LOW ){
+    if( digitalRead(BUTTON) == LOW ){
         tone(4,2000);
-        digitalWrite(power,HIGH);
+        digitalWrite(POWER,HIGH);
     }else{
         noTone(4);
-        digitalWrite(power,LOW);
+        digitalWrite(POWER,LOW);
     }
 }
 
 void charge()
 {
-    if(digitalRead(Done)){
-        if( digitalRead(Charge) == LOW ){
+    if(digitalRead(DONE)){
+        if( digitalRead(CHARGE) == LOW ){
             tone(4,4000,500);
         }
     }
@@ -35,13 +40,14 @@ void charge()
 
 void setup(){
     SerialUSB.begin(115200);
+    while(!SerialUSB);
     l218.init();                                          //Initialization
 
   //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
-    attachInterrupt(digitalPinToInterrupt(Button) , turn_on , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(BUTTON) , turn_on , CHANGE);
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge  , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE) , charge  , CHANGE);
 }
 
 void loop(){
