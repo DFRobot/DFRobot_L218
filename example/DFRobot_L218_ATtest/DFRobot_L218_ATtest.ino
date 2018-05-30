@@ -1,6 +1,6 @@
  /*
   * File  : DFRobot_L218_ATtest.ino
-  * Power : L218 needs 3.3V DC power supply
+  * Power : L218 powered by 3.7V lithium battery
   * Brief : This example use the serial port to send AT command to control the L218
   *         Press the button when the net light blinks L218 start
   *         With initialization completed, we can enter AT command to L218 directly
@@ -10,7 +10,7 @@
   *         AT+CGATT?: Check net attached state
   *         AT+CSTT  : Start net connect task
   *         AT+CIFSR : Get local IP
-  *         Get the AT command table in Resource folder
+  *         Get the AT command table in Resource folder :GSM_GNSS_AT_DOCUMENT_V2.8
   * Note  : The AT command must end with CRLF
   */
 
@@ -57,7 +57,10 @@ void setup(){
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(Charge) , charge ,  CHANGE);
-
+    while(!l218.checkTurnON()){
+        SerialUSB.println("Please Turn ON L218");
+        delay(3000);
+    }
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
     attachInterrupt(digitalPinToInterrupt(Ring)   , ring    , CHANGE);
 }

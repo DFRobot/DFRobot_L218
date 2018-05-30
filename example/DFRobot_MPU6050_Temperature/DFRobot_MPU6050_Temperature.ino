@@ -33,9 +33,9 @@ void setup()
 
 void loop()
 {
-    float temp = mpu.readTemperature();
-    SerialUSB.print(" Temp = ");
-    SerialUSB.print(temp);
+    float Temperature = mpu.readTemperature();
+    SerialUSB.print(" Temperature = ");
+    SerialUSB.print(Temperature);
     SerialUSB.println(" *C");
     delay(500);
 }

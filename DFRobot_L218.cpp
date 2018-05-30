@@ -50,7 +50,7 @@ bool   DFRobot_L218::turnON(void)
     return false;
 }
 
-bool   DFRobot_L218::check_TurnON(void)
+bool   DFRobot_L218::checkTurnON   (void)
 {
     if(check_send_cmd("AT\r\n","OK")){
         return true;
@@ -59,7 +59,7 @@ bool   DFRobot_L218::check_TurnON(void)
     }
 }
 
-bool   DFRobot_L218::check_SIMcard(void)
+bool   DFRobot_L218::checkSIMcard(void)
 {
     int count = 0;
     delay(1000);
@@ -334,7 +334,7 @@ void   DFRobot_L218::cleanBuffer(char *buffer,int count)
     }
 }
 
-bool   DFRobot_L218::initNet(void)
+bool   DFRobot_L218::initNetwork(void)
 {
     int  count = 0;
     while(count < 3){

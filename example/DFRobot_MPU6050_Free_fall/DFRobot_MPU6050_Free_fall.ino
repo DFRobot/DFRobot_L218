@@ -24,6 +24,7 @@ void charge()
 void setup() 
 {
     SerialUSB.begin(115200);
+    while(!SerialUSB);
     l218.init();
     l218.startMPU6050();
     attachInterrupt(digitalPinToInterrupt(Charge) , charge , CHANGE);

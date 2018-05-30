@@ -1,5 +1,6 @@
  /*
   * File   : DFRobot_L218_Tracker.ino
+  * Power  : L218 powered by 3.7V lithium battery
   * Brief  : This example use L218 as a tracker
   *          Press the button when the net light blinks L218 start
   *          After initialization is completed it will print longitude (Positive numbers for East and Negative numbers for West)
@@ -12,7 +13,7 @@
 
 DFRobot_L218  l218;
 
-void turn_on()  
+void turn_on()
 {  
     if( digitalRead(Button) == LOW ){
         tone(4,2000);
@@ -22,7 +23,6 @@ void turn_on()
         digitalWrite(power,LOW);
     }
 }
-
 
 void charge()
 {
@@ -45,7 +45,7 @@ void setup(){
 }
 
 void loop(){
-    if(l218.check_TurnON()){                              //Check if L218 start
+    if(l218.checkTurnON()){                               //Check if L218 start
         delay(10000);
         SerialUSB.println("Turn ON !");
         delay(500);

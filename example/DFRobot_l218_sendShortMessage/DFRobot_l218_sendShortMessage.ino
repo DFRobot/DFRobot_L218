@@ -1,5 +1,6 @@
  /*
   * File  : DFRobot_l218_sendShortMessage.ino
+  * Power : L218 powered by 3.7V lithium battery
   * Brief : This example use for send short message
   *         Press the button when the net light blinks L218 start
   *         After initialization is completed ennter a phone number then enter the message data
@@ -44,7 +45,6 @@ void ring()
     }
 }
 
-
 void setup(){
     SerialUSB.begin(115200);
     l218.init();
@@ -58,9 +58,9 @@ void setup(){
 
 void loop(){
     delay(5000);
-    if(l218.check_TurnON()){                                     //Check if L218 start
+    if(l218.checkTurnON   ()){                                  //Check if L218 start
         SerialUSB.println("Turn ON !");
-        if(l218.check_SIMcard()){                                //Check SIM card
+        if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
             delay(2000);
             SerialUSB.println("Input phone number:");
@@ -69,7 +69,7 @@ void loop(){
             SerialUSB.println("NO Card");
             return;
         }
-        if(l218.beginSMS(phoneNum)){                             //Get phone number
+        if(l218.beginSMS(phoneNum)){                            //Get phone number
             SerialUSB.println("OK");
             SerialUSB.println("Enter the message content: ");
             readSerial(message);
@@ -77,7 +77,7 @@ void loop(){
             SerialUSB.println("Fail");
             return;
         }
-        if(l218.sendSMS(message)){                               //Get message
+        if(l218.sendSMS(message)){                              //Get message
             SerialUSB.println("Send OK");
         }else{
             SerialUSB.println("Fail to send");

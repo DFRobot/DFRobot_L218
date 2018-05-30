@@ -1,11 +1,11 @@
  /*
   * File  : DFRobot_L218_MQTT.ino
-  * Power : L218 needs 3.3V DC power supply
+  * Power : L218 powered by 3.7V lithium battery
   * Brief : This example verify MQTT send and subscribe verification
   *         Press the button when the net light blinks L218 start
   *         With initialization completed, we connect to iot.dfrobot.com.cn
   *         Then send data to a topic
-  *         Thus we finished the MQTT send subscribe verification 
+  *         Thus we finished the MQTT send verification 
   */
 
 #include <DFRobot_L218.h>
@@ -13,10 +13,10 @@
 DFRobot_L218  l218;
 
 #define serverIP        "iot.dfrobot.com.cn"
-#define IOT_CLIENT      "test"
-#define IOT_USERNAME    "B1WMsSlvof"
-#define IOT_KEY         "BkMGjHxvjz"
-#define IOT_TOPIC       "BJ7eUeDoM"
+#define IOT_CLIENT      " CLIENT NAME "
+#define IOT_USERNAME    " USER   NAME "
+#define IOT_KEY         " PASSWORD    "
+#define IOT_TOPIC       " TOPIC       "
 
 void turn_on()
 {  
@@ -63,16 +63,16 @@ void setup(){
 void loop()
 {
     delay(5000);
-    if(l218.check_TurnON()){                                    //Check if L218 start
+    if(l218.checkTurnON()){                                     //Check if L218 start
         SerialUSB.println("");
         SerialUSB.println("Turn ON !");
-        if(l218.check_SIMcard()){                               //Check SIM card
+        if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card Init!");
         }else{
             SerialUSB.println("NO SIM card");
             return;
         }
-        if(l218.initNet()){                                     //Init network functions
+        if(l218.initNetwork()){                                 //Init network functions
            SerialUSB.println("NET ONLINE!");
            delay(5000);
         }else{

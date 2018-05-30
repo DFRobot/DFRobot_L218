@@ -28,6 +28,7 @@ enum Protocol {
 
 class DFRobot_L218
 {
+
 public:
     void    init(void);
     void    cleanBuffer(char *buffer,int count);
@@ -37,11 +38,11 @@ public:
     void    sleepMode(void);
     void    wakeUp(void);
     bool    turnON(void);
-    bool    check_TurnON(void);
+    bool    checkTurnON   (void);
     bool    getPos(void);
     bool    initPos(void);
-    bool    check_SIMcard(void);
-    bool    initNet(void);
+    bool    checkSIMcard(void);
+    bool    initNetwork(void);
     bool    beginSMS(const char* phoneNumber);
     bool    sendSMS(const char* content);
     bool    connect(char *server,Protocol ptl,int port);
@@ -57,6 +58,7 @@ public:
     int     readBuffer(char *buffer, int count, unsigned int timeout = DEFAULT_TIMEOUT, unsigned int chartimeout = DEFAULT_INTERCHAR_TIMEOUT);
     double  getLongitude(void);
     double  getLatitude(void);
+
 private:
     double  longitude_m = 0;
     double  latitude_m  = 0;
