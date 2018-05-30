@@ -694,3 +694,14 @@ void MPU6050::writeRegisterBit(uint8_t reg, uint8_t pos, bool state)
 
     writeRegister8(reg, value);
 }
+
+void MPU6050::freeFallDetection(void)
+{
+    setAccelPowerOnDelay(MPU6050_DELAY_1MS);
+    setIntFreeFallEnabled(true);
+    setIntZeroMotionEnabled(false);
+    setIntMotionEnabled(false);
+    setDHPFMode(MPU6050_DHPF_5HZ);
+    setFreeFallDetectionThreshold(17);
+    setFreeFallDetectionDuration(2);
+}

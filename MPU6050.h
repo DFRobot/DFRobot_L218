@@ -202,6 +202,7 @@ class MPU6050
     void calibrateGyro(uint8_t samples = 50);
     void setThreshold(uint8_t multiple = 1);
     uint8_t getThreshold(void);
+    void freeFallDetection(void);
 
     Vector readRawGyro(void);
     Vector readNormalizeGyro(void);

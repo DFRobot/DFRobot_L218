@@ -1,27 +1,14 @@
  /*
   * File  : DFRobot_MPU6050_Free_fall.ino
   * Brief : This is MPU6050 Triple Axis Gyroscope & Accelerometer. 
-  *         Free fall detection.
+  *         It's free fall detection program.
   */
 
 #include <MPU6050.h>
 #include <DFRobot_L218.h>
 
-MPU6050       mpu;
+MPU6050        mpu;
 DFRobot_L218  l218;
-
-#define  CHARGE    6
-
-boolean ledState           = false;
-boolean freefallDetected   = false;
-int     freefallBlinkCount = 0;
-
-void Charge()
-{  
-    if( digitalRead(CHARGE) == LOW ){
-        tone(4,4000,500);
-    }
-}
 
 void setup() 
 {
@@ -29,29 +16,13 @@ void setup()
     while(!SerialUSB);
     l218.init();
     l218.startMPU6050();
-    attachInterrupt(digitalPinToInterrupt(CHARGE) , Charge , CHANGE);
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_16G)){
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
         delay(500);
     }
-    mpu.setAccelPowerOnDelay(MPU6050_DELAY_3MS);
-    mpu.setIntFreeFallEnabled(true);
-    mpu.setIntZeroMotionEnabled(false);
-    mpu.setIntMotionEnabled(false);
-    mpu.setDHPFMode(MPU6050_DHPF_5HZ);
-    mpu.setFreeFallDetectionThreshold(17);
-    mpu.setFreeFallDetectionDuration(2);
+    mpu.freeFallDetection();                //Free fall detection mode
     checkSettings();
-    pinMode(4, OUTPUT);
-    digitalWrite(4, LOW);
-    attachInterrupt(0, doInt, RISING);
-}
-
-void doInt()
-{
-    freefallBlinkCount = 0;
-    freefallDetected = true;  
 }
 
 void checkSettings()
@@ -136,17 +107,10 @@ void loop()
 {
     Vector rawAccel = mpu.readRawAccel();
     Activites act = mpu.readActivites();
-    SerialUSB.print(act.isFreeFall);
-    SerialUSB.print("\n");
-    if (freefallDetected){
-        ledState = !ledState;
-        digitalWrite(13, ledState);
-        freefallBlinkCount++;
-        if (freefallBlinkCount == 20){
-            freefallDetected = false;
-            ledState = false;
-            digitalWrite(13, ledState);
-        }
+    if(act.isFreeFall){                     //Free fall detection
+        SerialUSB.println("Fall !");
+    }else{
+        SerialUSB.println("----");
     }
     delay(100);
 }
