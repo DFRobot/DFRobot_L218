@@ -9,6 +9,16 @@
 
 #include <MPU6050.h>
 
+void   MPU6050::enableMPU6050(void)
+{
+    digitalWrite(12 , HIGH  );
+}
+
+void   MPU6050::disableMPU6050()
+{
+    digitalWrite(12 , LOW   );
+}
+
 bool MPU6050::begin(mpu6050_dps_t scale, mpu6050_range_t range, int mpua)
 {
     mpuAddress = mpua;

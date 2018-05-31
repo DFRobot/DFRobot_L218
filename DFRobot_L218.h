@@ -22,8 +22,6 @@ public:
     void    init(void);
     void    cleanBuffer(char *buffer,int count);
     void    blink(int times , int interval);
-    void    startMPU6050(void);
-    void    stopMPU6050(void);
     void    sleepMode(void);
     void    wakeUp(void);
     bool    turnON(void);

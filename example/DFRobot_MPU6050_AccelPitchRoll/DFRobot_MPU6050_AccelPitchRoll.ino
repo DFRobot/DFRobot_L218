@@ -12,13 +12,13 @@
 MPU6050       mpu;
 DFRobot_L218  l218;
 
-#define  CHARGE    6
-#define  DONE      7
+#define  CHARGE_PIN    6
+#define  DONE_PIN      7
 
 void charge()
 {
-    if(digitalRead(DONE)){
-        if( digitalRead(CHARGE) == LOW ){
+    if(digitalRead(DONE_PIN)){
+        if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }
     }
@@ -29,7 +29,7 @@ void setup()
     SerialUSB.begin(115200);
     while(!SerialUSB);
     l218.init();                                                  //Initialization
-    l218.startMPU6050();                                          //Start MPU 6050
+    mpu.enableMPU6050();                                          //Start MPU 6050
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)){   //Init MPU6050
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
@@ -37,7 +37,7 @@ void setup()
     }
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(CHARGE), charge, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN), charge, CHANGE);
 }
 
 void loop()

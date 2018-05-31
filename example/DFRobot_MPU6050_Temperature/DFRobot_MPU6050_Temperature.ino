@@ -22,7 +22,7 @@ void setup()
 {
     SerialUSB.begin(115200);
     l218.init();
-    l218.startMPU6050();
+    mpu.enableMPU6050();
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)){
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");

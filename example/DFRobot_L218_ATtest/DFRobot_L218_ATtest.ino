@@ -2,7 +2,7 @@
   * File  : DFRobot_L218_ATtest.ino
   * Power : L218 powered by 3.7V lithium battery
   * Brief : This example use the serial port to send AT command to control the L218
-  *         Press the BUTTON when the net light blinks L218 start
+  *         Press the BUTTON_PIN when the net light blinks L218 start
   *         With initialization completed, we can enter AT command to L218 directly
   *  Common AT commands : 
   *         AT+CPIN? : Check SIM card
@@ -18,27 +18,27 @@
 
 DFRobot_L218  l218;
 
-#define  BUTTON    3
-#define  CHARGE    6
-#define  DONE      7
+#define  BUTTON_PIN    3
+#define  CHARGE_PIN    6
+#define  DONE_PIN      7
 #define  RING      8
-#define  POWER     9
+#define  POWER_PIN     9
 
 void turn_on()
 {  
-    if( digitalRead(BUTTON) == LOW ){
+    if( digitalRead(BUTTON_PIN) == LOW ){
         tone(4,2000);
-        digitalWrite(POWER,HIGH);
+        digitalWrite(POWER_PIN,HIGH);
     }else{
         noTone(4);
-        digitalWrite(POWER,LOW );
+        digitalWrite(POWER_PIN,LOW );
     }
 }
 
 void charge()
 {
-    if(digitalRead(DONE)){
-        if( digitalRead(CHARGE) == LOW ){
+    if(digitalRead(DONE_PIN)){
+        if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }
     }
@@ -61,11 +61,11 @@ void setup(){
   //Initialization
     l218.init();
 
-  //L218 boot interrupt. Press the BUTTON for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON until the NET LED light off L218 turns off.
-    attachInterrupt(digitalPinToInterrupt(BUTTON) , turn_on,  CHANGE);
+  //L218 boot interrupt. Press the BUTTON_PIN for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON_PIN until the NET LED light off L218 turns off.
+    attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on,  CHANGE);
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(CHARGE) , charge ,  CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge ,  CHANGE);
 
   //Check if L218 start
     while(!l218.checkTurnON()){

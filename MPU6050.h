@@ -138,6 +138,9 @@ class MPU6050
 {
     public:
 
+    void enableMPU6050(void);
+    void disableMPU6050(void);
+
     bool begin(mpu6050_dps_t scale = MPU6050_SCALE_2000DPS, mpu6050_range_t range = MPU6050_RANGE_2G, int mpua = MPU6050_ADDRESS);
 
     void setClockSource(mpu6050_clockSource_t source);

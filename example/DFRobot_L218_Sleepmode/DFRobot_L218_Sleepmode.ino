@@ -20,14 +20,14 @@
 DFRobot_L218  l218;
 int  s_mode = 1;
 
-#define  BUTTON    3
-#define  CHARGE    6
-#define  DONE      7
+#define  BUTTON_PIN    3
+#define  CHARGE_PIN    6
+#define  DONE_PIN      7
 
 void charge()
 {
-    if(digitalRead(DONE)){
-        if( digitalRead(CHARGE) == LOW ){
+    if(digitalRead(DONE_PIN)){
+        if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }
     }
@@ -45,7 +45,7 @@ void setup(){
     }
 
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(CHARGE) , charge , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge , CHANGE);
 }
 
 void loop(){
@@ -56,19 +56,19 @@ void loop(){
     while(Serial1.available()){
         SerialUSB.write(Serial1.read());
     }
-    if(!digitalRead(BUTTON)){
+    if(!digitalRead(BUTTON_PIN)){
         delay(50);
-        if(!digitalRead(BUTTON)){
+        if(!digitalRead(BUTTON_PIN)){
             if(s_mode){
                 l218.sleepMode();              //L218 enter sleep mode
                 SerialUSB.println("Enter sleep mode");
                 s_mode = 0;
-                while(!digitalRead(BUTTON));
+                while(!digitalRead(BUTTON_PIN));
             }else{
                 l218.wakeUp();                 //Wake up L218
                 SerialUSB.println("Wake UP!");
                 s_mode = 1;
-                while(!digitalRead(BUTTON));
+                while(!digitalRead(BUTTON_PIN));
             }
         }
     }

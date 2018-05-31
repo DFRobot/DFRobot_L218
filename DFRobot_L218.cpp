@@ -24,16 +24,6 @@ void   DFRobot_L218::init(void)
     digitalWrite(13 , LOW   );
 }
 
-void   DFRobot_L218::startMPU6050(void)
-{
-    digitalWrite(12 , HIGH  );
-}
-
-void   DFRobot_L218::stopMPU6050()
-{
-    digitalWrite(12 , LOW   );
-}
-
 bool   DFRobot_L218::turnON(void)
 {
     digitalWrite( 9 , HIGH  );
