@@ -18,14 +18,24 @@ DFRobot_L218  l218;
 #define  DONE_PIN      7
 #define  POWER_PIN     9
 
+int   t1=0,t2=0;
+
 void turn_on()
-{  
-    if( digitalRead(BUTTON_PIN) == LOW ){
-        tone(4,2000);
-        digitalWrite(POWER_PIN,HIGH);
+{
+    t1=t2;
+    t2=millis();
+    if(t1-t2){
+        if( digitalRead(BUTTON_PIN) == LOW ){
+            tone(4,2000);
+            digitalWrite(POWER_PIN,HIGH);
+        }else{
+            noTone(4);
+            digitalWrite(POWER_PIN,LOW );
+        }
+
     }else{
         noTone(4);
-        digitalWrite(POWER_PIN,LOW);
+        digitalWrite(POWER_PIN,LOW );
     }
 }
 

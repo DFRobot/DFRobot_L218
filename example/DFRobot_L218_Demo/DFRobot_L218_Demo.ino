@@ -41,12 +41,21 @@ const byte day   = 1;
 const byte month = 1;
 const byte year  = 18;
 
+int   t1=0,t2=0;
 
-void turn_on()  
+void turn_on()
 {
-    if( digitalRead(BUTTON_PIN) == LOW ){
-        tone(4,2000);
-        digitalWrite(POWER_PIN,HIGH);
+    t1=t2;
+    t2=millis();
+    if(t1-t2){
+        if( digitalRead(BUTTON_PIN) == LOW ){
+            tone(4,2000);
+            digitalWrite(POWER_PIN,HIGH);
+        }else{
+            noTone(4);
+            digitalWrite(POWER_PIN,LOW );
+        }
+
     }else{
         noTone(4);
         digitalWrite(POWER_PIN,LOW );
@@ -55,7 +64,7 @@ void turn_on()
 
 void charge()
 {
-    if(digitalRead(DONE_PIN)){
+    if(digitalRead(DONE_PIN) ){
         if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }

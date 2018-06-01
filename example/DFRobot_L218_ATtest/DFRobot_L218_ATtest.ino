@@ -21,14 +21,24 @@ DFRobot_L218  l218;
 #define  BUTTON_PIN    3
 #define  CHARGE_PIN    6
 #define  DONE_PIN      7
-#define  RING      8
+#define  RING_PIN      8
 #define  POWER_PIN     9
 
+int   t1=0,t2=0;
+bool  S = false;
+
 void turn_on()
-{  
-    if( digitalRead(BUTTON_PIN) == LOW ){
-        tone(4,2000);
-        digitalWrite(POWER_PIN,HIGH);
+{
+    t1=t2;
+    t2=millis();
+    if(t1-t2){
+        if( digitalRead(BUTTON_PIN) == LOW ){
+            tone(4,2000);
+            digitalWrite(POWER_PIN,HIGH);
+        }else{
+            noTone(4);
+            digitalWrite(POWER_PIN,LOW );
+        }
     }else{
         noTone(4);
         digitalWrite(POWER_PIN,LOW );
@@ -46,12 +56,14 @@ void charge()
 
 void ring()
 {
-    if( digitalRead(RING) == LOW ){
-        tone(4,8000);
-        SerialUSB.println("Ring ! ! !");
-    }else{
-        noTone(4);
-        SerialUSB.println("Ring Over");
+    if(S){
+        if( digitalRead(RING_PIN) == LOW ){
+            tone(4,8000);
+            SerialUSB.println("Ring ! ! !");
+        }else{
+            noTone(4);
+            SerialUSB.println("Ring Over");
+        }
     }
 }
 
@@ -60,7 +72,7 @@ void setup(){
     while(!SerialUSB);
   //Initialization
     l218.init();
-
+    S = false ;
   //L218 boot interrupt. Press the BUTTON_PIN for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON_PIN until the NET LED light off L218 turns off.
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on,  CHANGE);
 
@@ -71,9 +83,10 @@ void setup(){
     while(!l218.checkTurnON()){
         SerialUSB.println("Please Turn ON L218");
         delay(3000);
+        S = true ;
     }
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
-    attachInterrupt(digitalPinToInterrupt(RING)   , ring    , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(RING_PIN)   , ring    , CHANGE);
 }
 
 void loop(){
