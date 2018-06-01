@@ -35,7 +35,7 @@ void setup()
 {
     SerialUSB.begin(115200);
     while(!SerialUSB);
-    rtc.begin();     // initialize RTC 24H format
+    rtc.begin();           // initialize RTC 24H format
     rtc.setTime(hours, minutes, seconds);
     rtc.setDate(day  , month  , year   );
 
@@ -50,5 +50,5 @@ void setup()
 
 void loop()
 {
-
+    
 }

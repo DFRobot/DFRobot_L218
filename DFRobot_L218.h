@@ -35,7 +35,7 @@ public:
     bool    connect(char *server,Protocol ptl,int port);
     bool    disconnect(void);
     bool    MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
-    bool    MQTTsend(char* iot_topic, char* iot_data);
+    bool    MQTTsend(char* iot_topic, String iot_data);
     bool    MQTTsubscribe(char* iot_topic);
     bool    MQTTunsubscribe(char* iot_topic);
     bool    MQTTrecv(char* iot_topic, char* buf, int maxlen);

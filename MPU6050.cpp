@@ -33,7 +33,7 @@ bool MPU6050::begin(mpu6050_dps_t scale, mpu6050_range_t range, int mpua)
     actualThreshold = 0;
     if (fastRegister8(MPU6050_REG_WHO_AM_I) != 0x68)
     {
-    return false;
+        return false;
     }
     setClockSource(MPU6050_CLOCK_PLL_XGYRO);
     setScale(scale);

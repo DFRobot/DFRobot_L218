@@ -35,7 +35,6 @@ void setup()
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
         delay(500);
     }
-
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(CHARGE_PIN), charge, CHANGE);
 }
@@ -44,7 +43,7 @@ void loop()
 {
     Vector normAccel = mpu.readNormalizeAccel();
     int pitch = -(atan2(normAccel.XAxis, sqrt(normAccel.YAxis*normAccel.YAxis + normAccel.ZAxis*normAccel.ZAxis))*180.0)/M_PI;
-    int roll = (atan2(normAccel.YAxis, normAccel.ZAxis)*180.0)/M_PI;
+    int roll  =  (atan2(normAccel.YAxis, normAccel.ZAxis)*180.0)/M_PI;
     SerialUSB.print(" Pitch = ");
     SerialUSB.print(pitch);
     SerialUSB.print(" Roll = ");

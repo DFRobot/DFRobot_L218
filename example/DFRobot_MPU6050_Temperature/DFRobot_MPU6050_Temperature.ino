@@ -21,6 +21,7 @@ void charge()
 void setup() 
 {
     SerialUSB.begin(115200);
+    while(!SerialUSB);
     l218.init();                                    //Initialization
     mpu.enableMPU6050();                            //Enable MPU6050
     SerialUSB.println("Initialize MPU6050");

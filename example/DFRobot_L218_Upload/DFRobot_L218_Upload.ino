@@ -1,8 +1,9 @@
  /*
-  * File   : DFRobot_Demo.ino
+  * File   : DFRobot_Upload.ino
   * Power  : L218 powered by 3.7V lithium battery
-  * Brief  : This example use L218 get position temperature and time then send the data to Net whlie MQTT
-  *          And store the data in SD card
+  * Brief  : This example use L218 to get position, temperature and time then upload the data to iot with MQTT
+  *          And store the data in SD card. Then device enter sleep mode for 20 seconds
+  *          It will do those things again when it wake up
   * Note   : The tracker function only available in outdoor
   */
 
@@ -12,12 +13,13 @@
 #include <SPI.h>
 #include <SD.h>
 #include <RTCZero.h>
+#include <ArduinoLowPower.h>
+#include <string.h>
 
 RTCZero          rtc;
 MPU6050          mpu;
 DFRobot_L218     l218;
 File             myFile;
-const int        chipSelect = 11;
 
 #define  BUTTON_PIN    3
 #define  CHARGE_PIN    6
@@ -31,6 +33,9 @@ const int        chipSelect = 11;
 #define IOT_KEY         " PASSWORD    "
 #define IOT_TOPIC       " TOPIC       "
 
+//SD card chip select
+const int chipSelect = 11;
+
 // Change these values to set the current initial time
 const byte seconds = 0;
 const byte minutes = 0;
@@ -41,10 +46,9 @@ const byte day   = 1;
 const byte month = 1;
 const byte year  = 18;
 
-int   t1=0,t2=0;
-
 void turn_on()
 {
+    static int   t1=0,t2=0;
     t1=t2;
     t2=millis();
     if(t1-t2){
@@ -67,6 +71,11 @@ void charge()
             tone(4,4000,500);
         }
     }
+}
+
+void wakeup()
+{
+    l218.wakeUp();                                              //Wake up L218
 }
 
 void setup(){
@@ -94,8 +103,11 @@ void setup(){
   //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on , CHANGE);
 
-  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
+  //Battery charge interrupt. When battery get charge from USB, buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge  , CHANGE);
+
+  //Wake up interrupt.
+    LowPower.attachInterruptWakeup(RTC_ALARM_WAKEUP, wakeup, CHANGE );
 }
 
 void loop(){
@@ -132,49 +144,30 @@ void loop(){
             SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
             delay(500);
         }
-        float temp = mpu.readTemperature();
-        SerialUSB.print("Temperature = ");
+        float temperature = mpu.readTemperature();
         delay(500);
         mpu.disableMPU6050();                                   //Disable MPU6050
-        char  L218buffer[90] = {0};
-        char    latitude[30] = {0};
-        char   longitude[30] = {0};
-        char temperature[15] = {0};
-        char   time_year[ 3] = {0};
-        char  time_month[ 3] = {0};
-        char    time_day[ 3] = {0};
-        char      time_h[ 3] = {0};
-        char      time_m[ 3] = {0};
-        char      time_s[ 3] = {0};
-        itoa(rtc.getYear()    ,time_year  ,10);
-        itoa(rtc.getMonth()   ,time_month ,10);
-        itoa(rtc.getDay()     ,time_day   ,10);
-        itoa(rtc.getHours()   ,time_h     ,10);
-        itoa(rtc.getMinutes() ,time_m     ,10);
-        itoa(rtc.getSeconds() ,time_s     ,10);
-        dtostrf(temp      , 4 , 2 , temperature);
-        dtostrf(Longitude , 8 , 5 , longitude  );
-        dtostrf(Latitude  , 7 , 5 , latitude   );
-        memcpy(L218buffer,"Longitude : ",12);
-        strcat(L218buffer, longitude);
-        strcat(L218buffer," Latitude : ");
-        strcat(L218buffer,latitude);
-        strcat(L218buffer," Temperature: ");
-        strcat(L218buffer,temperature);
-        strcat(L218buffer," Date :");
-        strcat(L218buffer,time_year);
-        strcat(L218buffer,"/");
-        strcat(L218buffer,time_month);
-        strcat(L218buffer,"/");
-        strcat(L218buffer,time_day);
-        strcat(L218buffer," Time :");
-        strcat(L218buffer,time_h);
-        strcat(L218buffer,":");
-        strcat(L218buffer,time_m);
-        strcat(L218buffer,":");
-        strcat(L218buffer,time_s);
-        delay(500);
-        SerialUSB.println(L218buffer);
+        String  l218Buffer;
+        l218Buffer  = String();
+        l218Buffer += "Longitude : ";
+        l218Buffer +=  Longitude;
+        l218Buffer +=" Latitude : ";
+        l218Buffer +=  Latitude;
+        l218Buffer += " Temperature: ";
+        l218Buffer +=  temperature;
+        l218Buffer += " Date :";
+        l218Buffer += rtc.getYear();
+        l218Buffer += "/"; 
+        l218Buffer += rtc.getMonth();
+        l218Buffer += "/";
+        l218Buffer += rtc.getDay();
+        l218Buffer += " Time :";
+        l218Buffer += rtc.getHours();
+        l218Buffer += ":";
+        l218Buffer += rtc.getMinutes();
+        l218Buffer += ":";
+        l218Buffer += rtc.getSeconds();
+        SerialUSB.println(l218Buffer);
         if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
             delay(500);
@@ -202,7 +195,7 @@ void loop(){
             SerialUSB.println("MQTT connect failed");
             return;
         }
-        if(l218.MQTTsend(IOT_TOPIC,L218buffer)){                //MQTT send data
+        if(l218.MQTTsend(IOT_TOPIC,l218Buffer)){                //MQTT send data
             SerialUSB.println("Send OK");
         }else{
             SerialUSB.println("MQTT fail to send");
@@ -221,12 +214,14 @@ void loop(){
         myFile = SD.open("data.txt", FILE_WRITE);               //Open SD card file in write mode
         if(myFile){
             SerialUSB.print("Writing to test.txt...");
-            myFile.println(L218buffer);                         //Write data to file
+            myFile.println(l218Buffer);                         //Write data to file
             myFile.close();                                     //Save data and close file
             SerialUSB.println("done.");
         }else{
             SerialUSB.println("error opening test.txt");
         }
+        l218.sleepMode();                                       //L218 enter sleep mode
+        LowPower.sleep(20000);                                  //Processor enter sleep mode for 20000ms
     }else{
         SerialUSB.println("Please Turn ON L218");
         delay(3000);

@@ -379,7 +379,7 @@ bool   DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot
     return false;
 }
 
-bool   DFRobot_L218::MQTTsend(char* iot_topic, char* iot_data)
+bool   DFRobot_L218::MQTTsend(char* iot_topic, String iot_data)
 {
         char M0buffer[50]   = {0};
         Serial1.print("AT+CIPSEND\r\n");
@@ -388,7 +388,7 @@ bool   DFRobot_L218::MQTTsend(char* iot_topic, char* iot_data)
         char     MQTTdata[2]={0x00,0x04};
         int leng = 0;
         Serial1.write(0x32);
-        leng = strlen(iot_topic)+strlen(iot_data)+4;
+        leng = strlen(iot_topic)+iot_data.length()+4;
         Serial1.write(leng);
         Serial1.write(MQTTdata[0]);
         Serial1.write(strlen(iot_topic));

@@ -1,11 +1,11 @@
  /*
   * File  : DFRobot_L218_MQTT.ino
   * Power : L218 powered by 3.7V lithium battery
-  * Brief : This example verify MQTT send and subscribe verification
+  * Brief : This example verify MQTT publish verification
   *         Press the button when the net light blinks L218 start
   *         With initialization completed, we connect to iot.dfrobot.com.cn
   *         Then send data to a topic
-  *         Thus we finished the MQTT send verification 
+  *         Thus we finished the MQTT publish verification 
   */
 
 #include <DFRobot_L218.h>
@@ -24,10 +24,9 @@ DFRobot_L218  l218;
 #define IOT_KEY         " PASSWORD    "
 #define IOT_TOPIC       " TOPIC       "
 
-int   t1=0,t2=0;
-
 void turn_on()
 {
+    static int   t1=0,t2=0;
     t1=t2;
     t2=millis();
     if(t1-t2){
@@ -51,7 +50,6 @@ void charge()
         }
     }
 }
-
 
 void setup(){
     SerialUSB.begin(115200);

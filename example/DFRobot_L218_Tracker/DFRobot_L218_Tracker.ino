@@ -18,10 +18,9 @@ DFRobot_L218  l218;
 #define  DONE_PIN      7
 #define  POWER_PIN     9
 
-int   t1=0,t2=0;
-
 void turn_on()
 {
+    static int   t1=0,t2=0;
     t1=t2;
     t2=millis();
     if(t1-t2){
@@ -83,24 +82,6 @@ void loop(){
                 SerialUSB.print(Latitude ,6);
             }else{
                 SerialUSB.println("Not position");
-            }
-        }
-    }
-}
-
-int readSerial(char result[]){
-    int i = 0;
-    while(1){
-        while(SerialUSB.available() > 0){
-            char inChar = SerialUSB.read();
-            if(inChar == '\n'){
-                result[i] = '\0';
-                SerialUSB.flush();
-                return 0;
-            }
-            if(inChar != '\r'){
-                result[i] = inChar;
-                i++;
             }
         }
     }

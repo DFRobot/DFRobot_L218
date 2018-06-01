@@ -21,7 +21,7 @@ const byte year  = 18;
 void setup()
 {
     SerialUSB.begin(115200);
-    rtc.begin();        // initialize RTC
+    rtc.begin();                // initialize RTC
 
     // Set the time
     rtc.setHours(hours);
@@ -32,7 +32,6 @@ void setup()
     rtc.setDay(day);
     rtc.setMonth(month);
     rtc.setYear(year);
-
 }
 
 void loop()
@@ -56,8 +55,8 @@ void loop()
 }
 
 void print2digits(int number) {
-  if (number < 10) {
-    SerialUSB.print("0"); // print a 0 before if the number is < than 10
-  }
-  SerialUSB.print(number);
+    if(number < 10){
+        SerialUSB.print("0");   // print a 0 before if the number is < than 10
+    }
+    SerialUSB.print(number);
 }

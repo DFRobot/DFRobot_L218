@@ -14,8 +14,8 @@ void setup()
 {
     SerialUSB.begin(115200);
     while(!SerialUSB);
-    l218.init();
-    mpu.enableMPU6050();
+    l218.init();                            //Initialization
+    mpu.enableMPU6050();                    //Enable MPU6050
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_16G)){
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
@@ -66,18 +66,18 @@ void checkSettings()
     }
     SerialUSB.print(" * Accelerometer:             ");
     switch(mpu.getRange()){
-    case MPU6050_RANGE_16G:
-        SerialUSB.println("+/- 16 g"); 
-        break;
-    case MPU6050_RANGE_8G:
-        SerialUSB.println("+/- 8 g");
-        break;
-    case MPU6050_RANGE_4G:
-        SerialUSB.println("+/- 4 g");
-        break;
-    case MPU6050_RANGE_2G:             
-        SerialUSB.println("+/- 2 g");
-        break;
+        case MPU6050_RANGE_16G:
+            SerialUSB.println("+/- 16 g"); 
+            break;
+        case MPU6050_RANGE_8G:
+            SerialUSB.println("+/- 8 g");
+            break;
+        case MPU6050_RANGE_4G:
+            SerialUSB.println("+/- 4 g");
+            break;
+        case MPU6050_RANGE_2G:             
+            SerialUSB.println("+/- 2 g");
+            break;
     }  
     SerialUSB.print(" * Accelerometer offsets:     ");
     SerialUSB.print(mpu.getAccelOffsetX());
@@ -109,6 +109,7 @@ void loop()
     Activites act = mpu.readActivites();
     if(act.isFreeFall){                     //Free fall detection
         SerialUSB.println("Fall !");
+        tone(4,3000,500);
     }else{
         SerialUSB.println("----");
     }

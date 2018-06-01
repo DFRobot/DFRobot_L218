@@ -18,10 +18,10 @@ DFRobot_L218  l218;
 
 char phoneNum[20];
 char message[200];
-int  t1=0,t2=0;
 
 void turn_on()
 {
+    static int   t1=0,t2=0;
     t1=t2;
     t2=millis();
     if(t1-t2){
@@ -49,7 +49,7 @@ void charge()
 void setup(){
     SerialUSB.begin(115200);
     while(!SerialUSB);
-    l218.init();
+    l218.init();                                                //Initialization
 
   //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on , CHANGE);
