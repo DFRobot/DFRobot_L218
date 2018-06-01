@@ -106,7 +106,7 @@ void setup(){
   //Battery charge interrupt. When battery get charge from USB, buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge  , CHANGE);
 
-  //Wake up interrupt.
+  //RTC wake up interrupt.
     LowPower.attachInterruptWakeup(RTC_ALARM_WAKEUP, wakeup, CHANGE );
 }
 

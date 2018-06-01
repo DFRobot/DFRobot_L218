@@ -47,7 +47,9 @@ void setup(){
 
   //Battery charge interrupt. When battery get charge from USB, buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge , CHANGE);
+  //Wake up interrupt. Press the button to wake up device
     LowPower.attachInterruptWakeup(BUTTON_PIN      , wakeup, FALLING);
+  //RTC wake up interrupt.
     LowPower.attachInterruptWakeup(RTC_ALARM_WAKEUP, wakeup, CHANGE );
 }
 
@@ -58,6 +60,6 @@ void loop(){
         digitalWrite(LED_PIN, LOW);
         delay(500);
     }
-    l218.sleepMode();
-    LowPower.sleep(20000);
+        l218.sleepMode();                      //L218 enter sleep mode
+        LowPower.sleep(20000);                 //Processor enter sleep mode for 20s
 }
