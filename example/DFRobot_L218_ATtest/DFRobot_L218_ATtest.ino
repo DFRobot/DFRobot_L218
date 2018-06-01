@@ -41,7 +41,6 @@ void turn_on()
         }
     }else{
         noTone(4);
-        digitalWrite(POWER_PIN,LOW );
     }
 }
 

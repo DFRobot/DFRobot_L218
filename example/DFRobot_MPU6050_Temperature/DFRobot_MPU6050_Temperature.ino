@@ -21,19 +21,20 @@ void charge()
 void setup() 
 {
     SerialUSB.begin(115200);
-    l218.init();
-    mpu.enableMPU6050();
+    l218.init();                                    //Initialization
+    mpu.enableMPU6050();                            //Enable MPU6050
     SerialUSB.println("Initialize MPU6050");
     while(!mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G)){
         SerialUSB.println("Could not find a valid MPU6050 sensor, check wiring!");
         delay(500);
     }
+  //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(Charge) , charge , CHANGE);
 }
 
 void loop()
 {
-    float Temperature = mpu.readTemperature();
+    float Temperature = mpu.readTemperature();      //Read temperature
     SerialUSB.print(" Temperature = ");
     SerialUSB.print(Temperature);
     SerialUSB.println(" *C");

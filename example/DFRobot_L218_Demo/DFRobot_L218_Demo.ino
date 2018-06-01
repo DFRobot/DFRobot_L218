@@ -55,10 +55,8 @@ void turn_on()
             noTone(4);
             digitalWrite(POWER_PIN,LOW );
         }
-
     }else{
         noTone(4);
-        digitalWrite(POWER_PIN,LOW );
     }
 }
 
