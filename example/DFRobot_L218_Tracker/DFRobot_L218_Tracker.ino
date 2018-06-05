@@ -63,6 +63,14 @@ void loop(){
         delay(10000);
         SerialUSB.println("Turn ON !");
         delay(500);
+        SerialUSB.println("Turn ON !");
+        if(l218.checkSIMcard()){                          //Check SIM card
+            SerialUSB.println("Card ready");
+            delay(500);
+        }else{
+            SerialUSB.println("NO Card");
+            return;
+        }
         if(l218.initPos()){                               //Init positioning functions
             SerialUSB.println("Init position");
             delay(500);

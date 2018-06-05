@@ -7,11 +7,11 @@ void   DFRobot_L218::init(void)
     pinMode(6       , INPUT );
     pinMode(7       , INPUT );
     pinMode(8       , INPUT );
+    pinMode(A2      , INPUT );
     pinMode(9       , OUTPUT);
     pinMode(12      , OUTPUT);
     pinMode(13      , OUTPUT);
     pinMode(A1      , OUTPUT);
-    pinMode(A2      , OUTPUT);
     pinMode(A3      , OUTPUT);
     pinMode(A4      , OUTPUT);
     pinMode(A5      , OUTPUT);
