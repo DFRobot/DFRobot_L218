@@ -5,10 +5,12 @@
   *         With initialization completed, the LED blink once then device enter the sleep mode
   *         The internal RTC will wake up the device every 20 seconds
   *         The number of LED blinks increased one after wake up
+  * Note  : Plesae make sure you have import Arduino Low Power library
+  *         To use a library in a sketch, select it from Sketch > Import Library. 
   */
 
 #include <DFRobot_L218.h>
-#include "ArduinoLowPower.h"
+#include <ArduinoLowPower.h>
 
 DFRobot_L218  l218;
 int  repetitions = 1;
@@ -36,7 +38,6 @@ void wakeup()
 
 void setup(){
     SerialUSB.begin(115200);
-    while(!SerialUSB);
     l218.init();                               //Initialization
     SerialUSB.println("Turn ON L218");
     if(l218.turnON()){                         //Turn ON L218

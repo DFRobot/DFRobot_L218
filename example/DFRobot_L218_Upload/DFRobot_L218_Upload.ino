@@ -1,20 +1,21 @@
  /*
-  * File   : DFRobot_Upload.ino
-  * Power  : L218 powered by 3.7V lithium battery
-  * Brief  : This example use L218 to get position, temperature and time then upload the data to iot with MQTT
-  *          And store the data in SD card. Then device enter sleep mode for 20 seconds
-  *          It will do those things again when it wake up
-  * Note   : The tracker function only available in outdoor
+  * File  : DFRobot_Upload.ino
+  * Power : L218 powered by 3.7V lithium battery
+  * Brief : This example use L218 to get position, temperature and time then upload the data to iot with MQTT
+  *         And store the data in SD card. Then device enter sleep mode for 20 seconds
+  *         It will do those things again when it wake up
+  * Note  : This example needs SIM card and SD card
+  *         The tracker function only available in outdoor
+  *         Plesae make sure you have import Arduino Low Power library and Arduino RTC Zero library
+  *         To use a library in a sketch, select it from Sketch > Import Library.
   */
 
 #include <MPU6050.h>
 #include <DFRobot_L218.h>
-#include <avr/dtostrf.h>
 #include <SPI.h>
 #include <SD.h>
 #include <RTCZero.h>
 #include <ArduinoLowPower.h>
-#include <string.h>
 
 RTCZero          rtc;
 MPU6050          mpu;
@@ -66,7 +67,7 @@ void turn_on()
 
 void charge()
 {
-    if(digitalRead(DONE_PIN) ){
+    if(digitalRead(DONE_PIN)){
         if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }
@@ -95,11 +96,12 @@ void setup(){
     rtc.setYear(year);
 
     SerialUSB.print("Initializing SD card...");
-    if(!SD.begin(chipSelect)){                                  //Init SD card
-        SerialUSB.println("initialization failed!");
-        return;
+    while(!SD.begin(chipSelect)){                                  //Init SD card
+        SerialUSB.println("SD card initialization failed!");
+        delay(2000);
     }
     SerialUSB.println("initialization done.");
+
   //L218 boot interrupt. Press the button for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the button until the NET LED light off L218 turns off.
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on , CHANGE);
 
@@ -221,7 +223,7 @@ void loop(){
             SerialUSB.println("error opening test.txt");
         }
         l218.sleepMode();                                       //L218 enter sleep mode
-        LowPower.sleep(20000);                                  //Processor enter sleep mode for 20000ms
+        LowPower.sleep(20000);                                  //Processor enter sleep mode for 20s
     }else{
         SerialUSB.println("Please Turn ON L218");
         delay(3000);

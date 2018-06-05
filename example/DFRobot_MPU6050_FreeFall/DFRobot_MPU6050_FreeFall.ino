@@ -2,6 +2,7 @@
   * File  : DFRobot_MPU6050_Free_fall.ino
   * Brief : This is MPU6050 Triple Axis Gyroscope & Accelerometer. 
   *         It's free fall detection program.
+  *         The buzzer rings when device freefalls
   */
 
 #include <MPU6050.h>

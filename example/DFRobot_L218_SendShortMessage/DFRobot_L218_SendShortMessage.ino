@@ -5,6 +5,7 @@
   *         Press the button when the net light blinks L218 start
   *         After initialization is completed ennter a phone number then enter the message data
   *         Thus we finished the Short Message verification
+  * Note  : This example needs SIM card
   */
 
 #include <DFRobot_L218.h>
@@ -39,7 +40,7 @@ void turn_on()
 
 void charge()
 {
-    if(digitalRead(DONE_PIN) ){
+    if(digitalRead(DONE_PIN)){
         if( digitalRead(CHARGE_PIN) == LOW ){
             tone(4,4000,500);
         }
@@ -64,7 +65,7 @@ void loop(){
         if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
             delay(2000);
-            SerialUSB.println("Input phone number:");
+            SerialUSB.println("Enter the phone number end with CRLF:");
             readSerial(phoneNum);
         }else{
             SerialUSB.println("NO Card");
@@ -72,7 +73,7 @@ void loop(){
         }
         if(l218.beginSMS(phoneNum)){                            //Get phone number
             SerialUSB.println("OK");
-            SerialUSB.println("Enter the message content: ");
+            SerialUSB.println("Enter the message content end with CRLF: ");
             readSerial(message);
         }else{
             SerialUSB.println("Fail");

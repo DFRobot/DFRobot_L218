@@ -84,8 +84,11 @@ void setup(){
         delay(3000);
         L218_ON = true ;
     }
+    SerialUSB.println("L218 is powered on");
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
     attachInterrupt(digitalPinToInterrupt(RING_PIN)   , ring    , CHANGE);
+    SerialUSB.println("Enter your AT command :");
+    SerialUSB.println("For example, if you type AT\\r\\n, OK\\r\\n will be responsed!");
 }
 
 void loop(){

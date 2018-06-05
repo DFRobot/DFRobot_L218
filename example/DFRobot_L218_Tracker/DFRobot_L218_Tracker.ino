@@ -6,7 +6,8 @@
   *          After initialization is completed it will print longitude (Positive numbers for East and Negative numbers for West)
   *          and latitude (Positive numbers for North and Negative numbers for South)
   *          Thus we finished the positioning function verification
-  * Note   : The tracker function only available in outdoor
+  * Note   : This example needs SIM card
+  *          The tracker function only available in outdoor
   */
 
 #include <DFRobot_L218.h>
@@ -84,5 +85,8 @@ void loop(){
                 SerialUSB.println("Not position");
             }
         }
+    }else{
+        SerialUSB.println("Please Turn ON L218");
+        delay(3000);
     }
 }

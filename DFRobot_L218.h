@@ -25,7 +25,7 @@ public:
     void    sleepMode(void);
     void    wakeUp(void);
     bool    turnON(void);
-    bool    checkTurnON   (void);
+    bool    checkTurnON(void);
     bool    getPos(void);
     bool    initPos(void);
     bool    checkSIMcard(void);

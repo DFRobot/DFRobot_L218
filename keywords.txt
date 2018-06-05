@@ -34,7 +34,7 @@ MQTTsubscribe	KEYWORD2
 MQTTunsubscribe	KEYWORD2
 MQTTrecv	KEYWORD2
 MQTTdisconnect	KEYWORD2
-initNet	KEYWORD2
+initNetwork	KEYWORD2
 wakeUp	KEYWORD2
 sleepMode	KEYWORD2
 turnON	KEYWORD2

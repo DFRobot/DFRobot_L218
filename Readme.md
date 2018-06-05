@@ -1,5 +1,8 @@
 # DFROBOT_L218 Library for Arduino
 Provides an Arduino library for L218
+  L218 is a excellent global positioning navigation chip rely on GPRS+GPS+BDS(BeiDou Navigation Satellite System), it a Low-power High-performance module 
+supports Quad-band GSM/GPRS((850/900/1800/1900)). The chip has particularly wide operating temperature and internal integration of the TCP / IP protocol with 
+small package.
 
 ## Table of Contents
 
@@ -17,7 +20,9 @@ The library use for L218 as following function
 #### MPU6050 attitude sensor
 #### Send short message
 #### Get current position
-#### SD card 
+#### Send data to iot
+#### SD card
+#### RTC
 #### 
 
 ## Methods
@@ -48,7 +53,7 @@ bool tureON(void);
  *     ture   Turn ON 
  *     false  Turn OFF
  */
-bool check_TurnON(void);
+bool checkTurnON(void);
 
 /*
  * @brief Begin to send short message
@@ -70,17 +75,6 @@ bool beginSMS(const char* phoneNumber);
  *     false  Turn OFF
  */
 bool sendSMS(const char* content);
-
-/*
- * @brief Make a phone call
- *
- * @param phoneNumber Target number
- *
- * @return
- *     ture   Turn ON 
- *     false  Turn OFF
- */
-bool voiceCall(const char* phoneNumber);
 
 /*
  * @brief Init L218 positioning module
@@ -123,7 +117,7 @@ double getLatitude(void);
  *     ture   Success
  *     false  Failed
  */
-bool initNet(void);
+bool initNetwork(void);
 
 /*
  * @brief MQTT connect request
@@ -151,19 +145,7 @@ bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
  *     ture   Success
  *     false  Failed
  */
-bool MQTTsend(char* iot_topic, char* iot_data);
-
-/*
- * @brief Enable MPU6050 attitude sensor
- *
- */
-void startMPU6050(void);
-
-/*
- * @brief Disable MPU6050 attitude sensor
- *
- */
-void stopMPU6050(void);
+bool MQTTsend(char* iot_topic, String iot_data);
 
 /*
  * @brief LED blink
@@ -184,6 +166,18 @@ void sleepMode(void);
  *
  */
 void wakeUp(void);
+
+/*
+ * @brief Enable MPU6050 attitude sensor
+ *
+ */
+void startMPU6050(void);
+
+/*
+ * @brief Disable MPU6050 attitude sensor
+ *
+ */
+void stopMPU6050(void);
 
 ```
 

@@ -11,10 +11,15 @@
 MPU6050       mpu;
 DFRobot_L218  l218;
 
+#define  CHARGE_PIN    6
+#define  DONE_PIN      7
+
 void charge()
-{  
-    if( digitalRead(Charge) == LOW ){
-        tone(4,4000,500);
+{
+    if(digitalRead(DONE_PIN)){
+        if( digitalRead(CHARGE_PIN) == LOW ){
+            tone(4,4000,500);
+        }
     }
 }
 
@@ -30,7 +35,7 @@ void setup()
         delay(500);
     }
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(Charge) , charge , CHANGE);
+    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge , CHANGE);
 }
 
 void loop()
