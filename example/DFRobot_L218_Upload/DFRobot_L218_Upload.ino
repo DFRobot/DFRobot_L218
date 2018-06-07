@@ -43,9 +43,9 @@ const byte minutes = 0;
 const byte hours   = 0;
 
 // Change these values to set the current initial date
-const byte day   = 1;
-const byte month = 1;
-const byte year  = 18;
+const byte day     = 1;
+const byte month   = 1;
+const int  year    = 2018;
 
 void turn_on()
 {
@@ -153,22 +153,22 @@ void loop(){
         l218Buffer  = String();
         l218Buffer += "Longitude : ";
         l218Buffer +=  Longitude;
-        l218Buffer +=" Latitude : ";
+        l218Buffer += " Latitude : ";
         l218Buffer +=  Latitude;
         l218Buffer += " Temperature: ";
         l218Buffer +=  temperature;
         l218Buffer += " Date :";
-        l218Buffer += rtc.getYear();
+        l218Buffer +=  rtc.getYear();
         l218Buffer += "/"; 
-        l218Buffer += rtc.getMonth();
+        l218Buffer +=  rtc.getMonth();
         l218Buffer += "/";
-        l218Buffer += rtc.getDay();
+        l218Buffer +=  rtc.getDay();
         l218Buffer += " Time :";
-        l218Buffer += rtc.getHours();
+        l218Buffer +=  rtc.getHours();
         l218Buffer += ":";
-        l218Buffer += rtc.getMinutes();
+        l218Buffer +=  rtc.getMinutes();
         l218Buffer += ":";
-        l218Buffer += rtc.getSeconds();
+        l218Buffer +=  rtc.getSeconds();
         SerialUSB.println(l218Buffer);
         if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
