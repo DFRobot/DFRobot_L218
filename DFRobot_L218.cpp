@@ -132,10 +132,10 @@ bool   DFRobot_L218::initPos(void)
     int  count = 0;
     if(check_send_cmd("AT+CSTT=\"CMNET\"\r\n","OK")){
         if(check_send_cmd("AT+ciicr\r\n","OK",1000,3000)){
-            if(check_send_cmd("AT+GTPOS=1\r\n","OK",1000,3000)){
+            if(check_send_cmd("AT+GTPOS=1\r\n" ,"OK",1000,3000)){
                 check_send_cmd("AT+GTPOS=2\r\n","OK",1000,3000);
                 check_send_cmd("AT+CIPSHUT\r\n","OK",1000,3000);
-                if(check_send_cmd("AT+EGDCONT=2,\"IP\",\"CMNET\"\r\n","OK")){
+                if(check_send_cmd("AT+EGDCONT=2,\"IP\" ,\"CMNET\"\r\n","OK")){
                     check_send_cmd("AT+EGDCONT=1,\"IP\",\"CMNET\"\r\n","OK");
                     delay(500);
                     check_send_cmd("AT+MGPSTS=1\r\n","1");

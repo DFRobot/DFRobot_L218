@@ -21,7 +21,7 @@ const byte hours   = 0;
 // Change these values to set the current initial date
 const byte day     = 1;
 const byte month   = 1;
-const byte year    = 18;
+const int  year    = 2018;
 
 void alarmMatch()
 {

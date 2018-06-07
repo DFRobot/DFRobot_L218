@@ -96,7 +96,7 @@ void setup(){
     rtc.setYear(year);
 
     SerialUSB.print("Initializing SD card...");
-    while(!SD.begin(chipSelect)){                                  //Init SD card
+    while(!SD.begin(chipSelect)){                               //Init SD card
         SerialUSB.println("SD card initialization failed!");
         delay(2000);
     }
