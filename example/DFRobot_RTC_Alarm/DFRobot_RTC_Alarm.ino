@@ -3,7 +3,7 @@
   * Brief : This example is a RTC alarm clock
   *         Set the current initial date and time
   *         Set alarm clock ,when buzzer ring press button to stop alarm
-  * Note  : Plesae make sure you have import Arduino RTC Zero library
+  * Note  : Please make sure you have import Arduino RTC Zero library
   *         To use a library in a sketch, select it from Sketch > Import Library.
   */
 

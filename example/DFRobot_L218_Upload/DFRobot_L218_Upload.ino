@@ -6,7 +6,7 @@
   *         It will do those things again when it wake up
   * Note  : This example needs SIM card and SD card
   *         The tracker function only available in outdoor
-  *         Plesae make sure you have import Arduino Low Power library and Arduino RTC Zero library
+  *         Please make sure you have import Arduino Low Power library and Arduino RTC Zero library
   *         To use a library in a sketch, select it from Sketch > Import Library.
   */
 

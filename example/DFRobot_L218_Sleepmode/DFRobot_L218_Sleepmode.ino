@@ -5,7 +5,7 @@
   *         With initialization completed, the LED blink once then device enter the sleep mode
   *         The internal RTC will wake up the device every 20 seconds
   *         The number of LED blinks increased one after wake up
-  * Note  : Plesae make sure you have import Arduino Low Power library
+  * Note  : Please make sure you have import Arduino Low Power library
   *         To use a library in a sketch, select it from Sketch > Import Library. 
   */
 

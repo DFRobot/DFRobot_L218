@@ -2,7 +2,7 @@
   * File  : DFRobot_RTC_GetTime.ino
   * Brief : This example is a RTC clock
   *         Set the current initial date and time, it works like a clock
-  * Note  : Plesae make sure you have import Arduino RTC Zero library
+  * Note  : Please make sure you have import Arduino RTC Zero library
   *         To use a library in a sketch, select it from Sketch > Import Library. 
   */
 
