@@ -16,7 +16,6 @@ void   DFRobot_L218::init(void)
     pinMode(A4      , OUTPUT);
     pinMode(A5      , OUTPUT);
     digitalWrite(A1 , LOW   );
-    digitalWrite(A2 , HIGH  );
     digitalWrite(A3 , HIGH  );
     digitalWrite(A4 , HIGH  );
     digitalWrite(A5 , HIGH  );
@@ -379,7 +378,7 @@ bool   DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot
     return false;
 }
 
-bool   DFRobot_L218::MQTTsend(char* iot_topic, String iot_data)
+bool   DFRobot_L218::MQTTpublish(char* iot_topic, String iot_data)
 {
         char M0buffer[50]   = {0};
         Serial1.print("AT+CIPSEND\r\n");

@@ -23,6 +23,7 @@ DFRobot_L218  l218;
 #define  DONE_PIN      7
 #define  RING_PIN      8
 #define  POWER_PIN     9
+#define  STATUS_PIN   A2
 
 bool  L218_ON = false;
 
@@ -32,7 +33,7 @@ void turn_on()
     t1=t2;
     t2=millis();
     if(t1-t2){
-        if( digitalRead(BUTTON_PIN) == LOW ){
+        if( digitalRead(BUTTON_PIN) == LOW){
             tone(4,2000);
             digitalWrite(POWER_PIN,HIGH);
         }else{
@@ -41,6 +42,7 @@ void turn_on()
         }
     }else{
         noTone(4);
+        digitalWrite(POWER_PIN,LOW );
     }
 }
 
@@ -55,7 +57,7 @@ void charge()
 
 void ring()
 {
-    if(L218_ON){
+    if(digitalRead(STATUS_PIN)){
         if( digitalRead(RING_PIN) == LOW ){
             tone(4,8000);
             SerialUSB.println("Ring ! ! !");
@@ -74,29 +76,37 @@ void setup(){
     L218_ON = false ;
   //L218 boot interrupt. Press the BUTTON_PIN for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON_PIN until the NET LED light off L218 turns off.
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on,  CHANGE);
-
+  //
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
     attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge ,  CHANGE);
-
   //Check if L218 start
-    while(!l218.checkTurnON()){
-        SerialUSB.println("Please Turn ON L218");
-        delay(3000);
-        L218_ON = true ;
-    }
-    SerialUSB.println("L218 is powered on");
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
     attachInterrupt(digitalPinToInterrupt(RING_PIN)   , ring    , CHANGE);
+    while(!digitalRead(STATUS_PIN)){
+        SerialUSB.println("Please turn on L218");
+        delay(5000);
+    }
+    SerialUSB.println("L218 is powered on ");
     SerialUSB.println("Enter your AT command :");
     SerialUSB.println("For example, if you type AT\\r\\n, OK\\r\\n will be responsed!");
 }
 
 void loop(){
-    while(SerialUSB.available()){
-        Serial1.write(SerialUSB.read());
+    while(digitalRead(STATUS_PIN)){
+        while(SerialUSB.available()){
+            Serial1.write(SerialUSB.read());
+        }
+        SerialUSB.flush();
+        while(Serial1.available()){
+            SerialUSB.write(Serial1.read());
+        }
     }
-    SerialUSB.flush();
-    while(Serial1.available()){
-        SerialUSB.write(Serial1.read());
+    while(!digitalRead(STATUS_PIN)){
+        SerialUSB.println("Please turn on L218");
+        delay(5000);
+    }
+    if(digitalRead(STATUS_PIN)){
+        SerialUSB.println("L218 is powered on ");
+        SerialUSB.println("Enter your AT command :");
     }
 }

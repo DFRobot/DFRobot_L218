@@ -61,6 +61,6 @@ void loop(){
         digitalWrite(LED_PIN, LOW);
         delay(500);
     }
-        l218.sleepMode();                      //L218 enter sleep mode
-        LowPower.sleep(20000);                 //Processor enter sleep mode for 20s
+    l218.sleepMode();                          //L218 enter sleep mode
+    LowPower.sleep(20000);                     //Processor enter sleep mode for 20s
 }

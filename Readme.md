@@ -135,17 +135,17 @@ bool initNetwork(void);
 bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
 
 /*
- * @brief MQTT send command
+ * @brief MQTT publish command
  *
  * @param iot_topic Target topic
  *
- * @param iot_data  The data you want to send
+ * @param iot_data  The data you want to publish
  *
  * @return
  *     ture   Success
  *     false  Failed
  */
-bool MQTTsend(char* iot_topic, String iot_data);
+bool MQTTpublish(char* iot_topic, String iot_data);
 
 /*
  * @brief LED blink
@@ -166,18 +166,6 @@ void sleepMode(void);
  *
  */
 void wakeUp(void);
-
-/*
- * @brief Enable MPU6050 attitude sensor
- *
- */
-void startMPU6050(void);
-
-/*
- * @brief Disable MPU6050 attitude sensor
- *
- */
-void stopMPU6050(void);
 
 ```
 

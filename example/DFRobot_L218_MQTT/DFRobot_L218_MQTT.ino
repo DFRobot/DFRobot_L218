@@ -18,11 +18,11 @@ DFRobot_L218  l218;
 #define  POWER_PIN     9
 
 //Login website to register an account ,fill the following information based on your account
-#define serverIP        "iot.dfrobot.com.cn"
-#define IOT_CLIENT      " CLIENT NAME "
-#define IOT_USERNAME    " USER   NAME "
-#define IOT_KEY         " PASSWORD    "
-#define IOT_TOPIC       " TOPIC       "
+#define  serverIP        "iot.dfrobot.com.cn"
+#define  IOT_CLIENT      " CLIENT NAME "
+#define  IOT_USERNAME    " USER   NAME "
+#define  IOT_KEY         " PASSWORD    "
+#define  IOT_TOPIC       " TOPIC       "
 
 void turn_on()
 {
@@ -93,10 +93,10 @@ void loop()
             SerialUSB.println("MQTT connect failed");
             return;
         }
-        if(l218.MQTTsend(IOT_TOPIC,"L218test")){                //MQTT send data
-            SerialUSB.println("Send OK");
+        if(l218.MQTTpublish(IOT_TOPIC,"L218test")){             //MQTT publish data
+            SerialUSB.println("Publish OK");
         }else{
-            SerialUSB.println("MQTT fail to send");
+            SerialUSB.println("MQTT fail to publish");
             return;
         }
         if(l218.MQTTdisconnect()){                              //MQTT disconnect requst

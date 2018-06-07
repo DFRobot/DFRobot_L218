@@ -29,7 +29,7 @@ disconnect	KEYWORD2
 createFolder	KEYWORD2
 deleteFolder	KEYWORD2
 MQTTconnect	KEYWORD2
-MQTTsend	KEYWORD2
+MQTTpublish	KEYWORD2
 MQTTsubscribe	KEYWORD2
 MQTTunsubscribe	KEYWORD2
 MQTTrecv	KEYWORD2
