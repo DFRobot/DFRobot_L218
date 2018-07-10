@@ -3,8 +3,9 @@
   * Power : L218 powered by 3.7V lithium battery
   * Brief : This example use the serial port to send AT command to control the L218
   *         Press the BUTTON_PIN when the net light blinks L218 start
+  *         Then get battery power
   *         With initialization completed, we can enter AT command to L218 directly
-  *  Common AT commands : 
+  *         Common AT commands : 
   *         AT+CPIN? : Check SIM card
   *         AT+CSQ   : Check signal quality
   *         AT+CGATT?: Check net attached state
@@ -23,7 +24,6 @@ DFRobot_L218  l218;
 #define  DONE_PIN      7
 #define  RING_PIN      8
 #define  POWER_PIN     9
-#define  STATUS_PIN   A2
 
 bool  L218_ON = false;
 
@@ -57,7 +57,7 @@ void charge()
 
 void ring()
 {
-    if(digitalRead(STATUS_PIN)){
+    if(l218.checkTurnON()){
         if( digitalRead(RING_PIN) == LOW ){
             tone(4,8000);
             SerialUSB.println("Ring ! ! !");
@@ -75,24 +75,25 @@ void setup(){
     l218.init();
     L218_ON = false ;
   //L218 boot interrupt. Press the BUTTON_PIN for 1-2 seconds, L218 turns on when NET LED light up, Press and hold the BUTTON_PIN until the NET LED light off L218 turns off.
-    attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on,  CHANGE);
-  //
+    attachInterrupt(digitalPinToInterrupt(BUTTON_PIN) , turn_on ,  CHANGE);
   //Battery charge interrupt. When battery get charge from USB, Buzzer sounds for 0.5 seconds
-    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge ,  CHANGE);
-  //Check if L218 start
+    attachInterrupt(digitalPinToInterrupt(CHARGE_PIN) , charge  ,  CHANGE);
   //Ring interrupt. When there is a phone call, Buzzer sounds. Enter "ATA" for answer the call "ATH" for hang up the call
-    attachInterrupt(digitalPinToInterrupt(RING_PIN)   , ring    , CHANGE);
-    while(!digitalRead(STATUS_PIN)){
+    attachInterrupt(digitalPinToInterrupt(RING_PIN)   , ring    ,  CHANGE);
+    while(!l218.checkTurnON()){                              //Check if L218 start
         SerialUSB.println("Please turn on L218");
         delay(5000);
     }
     SerialUSB.println("L218 is powered on ");
+    SerialUSB.print("Battery power = ");
+    SerialUSB.print(l218.checkBattery());                    //Check battery power
+    SerialUSB.println("%");
     SerialUSB.println("Enter your AT command :");
     SerialUSB.println("For example, if you type AT\\r\\n, OK\\r\\n will be responsed!");
 }
 
 void loop(){
-    while(digitalRead(STATUS_PIN)){
+    while(l218.checkTurnON()){
         while(SerialUSB.available()){
             Serial1.write(SerialUSB.read());
         }
@@ -101,11 +102,11 @@ void loop(){
             SerialUSB.write(Serial1.read());
         }
     }
-    while(!digitalRead(STATUS_PIN)){
+    while(!l218.checkTurnON()){
         SerialUSB.println("Please turn on L218");
         delay(5000);
     }
-    if(digitalRead(STATUS_PIN)){
+    if(l218.checkTurnON()){
         SerialUSB.println("L218 is powered on ");
         SerialUSB.println("Enter your AT command :");
     }

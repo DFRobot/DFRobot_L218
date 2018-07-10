@@ -2,11 +2,12 @@
 
 void   DFRobot_L218::init(void)
 {
-    Serial1.begin(19200);
+    Serial1.begin(9600);
     pinMode(3       , INPUT );
     pinMode(6       , INPUT );
     pinMode(7       , INPUT );
     pinMode(8       , INPUT );
+    pinMode(A0      , INPUT );
     pinMode(A2      , INPUT );
     pinMode(9       , OUTPUT);
     pinMode(12      , OUTPUT);
@@ -25,12 +26,13 @@ void   DFRobot_L218::init(void)
 
 bool   DFRobot_L218::turnON(void)
 {
+    digitalWrite(A4 , HIGH  );
     digitalWrite( 9 , HIGH  );
     delay(2000);
     digitalWrite( 9 , LOW   );
     int i = 3;
     while(i){
-        if(check_send_cmd("AT\r\n","OK")){
+        if(digitalRead(A2)){
             return true;
         }
         delay(500);
@@ -39,13 +41,48 @@ bool   DFRobot_L218::turnON(void)
     return false;
 }
 
-bool   DFRobot_L218::checkTurnON   (void)
+bool   DFRobot_L218::checkTurnON(void)
 {
-    if(check_send_cmd("AT\r\n","OK")){
-        return true;
-    }else{
-        return false;
+    return  digitalRead(A2);
+}
+
+int   DFRobot_L218::checkBattery(void)
+{
+    digitalWrite(A1 , LOW   );
+    int   sensorValue = analogRead(A0);
+    float voltage     = sensorValue * (3.3 / 1023.0);
+    sensorValue = 0;
+    if(voltage > 2.03){
+        sensorValue = 100;
     }
+    if(2.03 > voltage > 1.99){
+        sensorValue =  90;
+    }
+    if(2.00 > voltage > 1.96){
+        sensorValue =  80;
+    }
+    if(1.97 > voltage > 1.93){
+        sensorValue =  70;
+    }
+    if(1.94 > voltage > 1.91){
+        sensorValue =  60;
+    }
+    if(1.92 > voltage > 1.89){
+        sensorValue =  50;
+    }
+    if(1.90 > voltage > 1.88){
+        sensorValue =  40;
+    }
+    if(1.89 > voltage > 1.87){
+        sensorValue =  30;
+    }
+    if(1.88 > voltage > 1.84){
+        sensorValue =  20;
+    }
+    if(1.85 > voltage){
+        sensorValue =  10;
+    }
+    return sensorValue;
 }
 
 bool   DFRobot_L218::checkSIMcard(void)
@@ -53,7 +90,7 @@ bool   DFRobot_L218::checkSIMcard(void)
     int count = 0;
     delay(1000);
     while(count < 3){
-        if(check_send_cmd("AT\r\n","OK")){
+        if(digitalRead(A2)){
             break;
         }else{
             count++;
@@ -76,6 +113,14 @@ bool   DFRobot_L218::checkSIMcard(void)
         return false;
     }
     return true;
+}
+
+void   DFRobot_L218::turnOFF(void)
+{
+    Serial1.println("at+cpowd=1");
+    digitalWrite(A3,  LOW  );
+    digitalWrite(A4 , LOW  );
+    digitalWrite(A5,  LOW  );
 }
 
 void   DFRobot_L218::blink(int times , int interval)
@@ -217,19 +262,6 @@ double DFRobot_L218::getLatitude()
     return  latitude_m;
 }
 
-bool   DFRobot_L218::check_send_cmd(const char* cmd, const char* resp, unsigned int timeout, unsigned int chartimeout)
-{
-    char SIMbuffer[100];
-    cleanBuffer(SIMbuffer,100);
-    Serial1.write(cmd);
-    readBuffer(SIMbuffer,100,timeout, chartimeout);
-    if(NULL != strstr(SIMbuffer,resp)){
-        return true;
-    }else{
-        return false;
-    }
-}
-
 bool   DFRobot_L218::connect(char *server,Protocol ptl,int port)
 {
     char num[4];
@@ -268,6 +300,7 @@ bool   DFRobot_L218::connect(char *server,Protocol ptl,int port)
 bool   DFRobot_L218::disconnect(void)
 {
     if(check_send_cmd("AT+CIPSHUT\r\n","OK",1000,3000)){
+        Serial1.println("AT+CIPCLOSE");
         return true;
     }else{
         return false;
@@ -277,9 +310,12 @@ bool   DFRobot_L218::disconnect(void)
 void   DFRobot_L218::sleepMode(void)
 {
     digitalWrite(A5,LOW);
-    Serial1.println("at+eslp=1");
-    Serial1.println("at+csclk=1");
-    delay(1500);
+    Serial1.println("AT+CFUN=0");
+    delay(100);
+    Serial1.println("AT+ESLP=1");
+    delay(100);
+    Serial1.println("AT+CSCLK=1");
+    delay(100);
     Serial1.end();
     Serial1.begin(19200);
 }
@@ -287,6 +323,7 @@ void   DFRobot_L218::sleepMode(void)
 void   DFRobot_L218::wakeUp(void)
 {
     digitalWrite(A5,HIGH);
+    Serial1.println("AT+CFUN=1");
 }
 
 int    DFRobot_L218::readBuffer(char *buffer, int count, unsigned int timeout, unsigned int chartimeout)
@@ -348,7 +385,7 @@ bool   DFRobot_L218::initNetwork(void)
     }
 }
 
-bool   DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot_key)
+bool   DFRobot_L218::mqttConnect(char* iot_client, char* iot_username, char* iot_key)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">")){
         char M0buffer[50]   = {0};
@@ -378,7 +415,7 @@ bool   DFRobot_L218::MQTTconnect(char* iot_client, char* iot_username, char* iot
     return false;
 }
 
-bool   DFRobot_L218::MQTTpublish(char* iot_topic, String iot_data)
+bool   DFRobot_L218::mqttPublish(char* iot_topic, String iot_data)
 {
         char M0buffer[50]   = {0};
         Serial1.print("AT+CIPSEND\r\n");
@@ -404,7 +441,7 @@ bool   DFRobot_L218::MQTTpublish(char* iot_topic, String iot_data)
     }
 }
 
-bool   DFRobot_L218::MQTTsubscribe(char* iot_topic)
+bool   DFRobot_L218::mqttSubscribe(char* iot_topic)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">",900,5000)){
         char     MQTTbuff[10]={0};
@@ -426,7 +463,7 @@ bool   DFRobot_L218::MQTTsubscribe(char* iot_topic)
     }
 }
 
-bool   DFRobot_L218::MQTTunsubscribe(char* iot_topic)
+bool   DFRobot_L218::mqttUnsubscribe(char* iot_topic)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">")){
         char     MQTTbuff[10]={0};
@@ -446,7 +483,7 @@ bool   DFRobot_L218::MQTTunsubscribe(char* iot_topic)
     }
 }
 
-bool   DFRobot_L218::MQTTrecv(char* iot_topic, char* buf, int maxlen)
+bool   DFRobot_L218::mqttRecv(char* iot_topic, char* buf, int maxlen)
 {
     char   MQTTbuff[maxlen+30];
     char  *p; 
@@ -461,7 +498,7 @@ bool   DFRobot_L218::MQTTrecv(char* iot_topic, char* buf, int maxlen)
     return false;
 }
 
-bool   DFRobot_L218::MQTTdisconnect(void)
+bool   DFRobot_L218::mqttDisconnect(void)
 {
     if(check_send_cmd("AT+CIPSEND\r\n",">")){
         char     MQTTdata[2]={0xe0,0x00};
@@ -473,3 +510,114 @@ bool   DFRobot_L218::MQTTdisconnect(void)
     }
 }
 
+bool   DFRobot_L218::httpInit(void)
+{
+    if(check_send_cmd("AT+SAPBR=3,1,\"APN\",\"cmnet\"\r\n","OK",10,1000)){
+        if(!check_send_cmd("AT+SAPBR=1,1\r\n","OK",10,1000)){
+            return false;
+        }
+    }else{
+         return false;
+    }
+    if(!check_send_cmd("AT+SAPBR=2,1\r\n","OK",10,1000)){
+        return false;
+    }
+    return true;
+}
+
+bool  DFRobot_L218::httpConnect(const char *Host)
+{
+    char httpbuff[100];
+    int k = 0;
+    delay(5);
+    Serial1.write("AT+HTTPPARA=URL,\"");
+    Serial1.write(Host);
+    Serial1.write("\"\r\n");
+    while(1){
+        while(Serial1.available()){
+            readBuffer(httpbuff,100);
+            if(NULL != strstr(httpbuff,"OK")){
+                k = 1;
+                break;
+            }
+            if(NULL != strstr(httpbuff,"ERROR")){
+                return false;
+            }
+        }
+        if(k){
+            break;
+        }
+    }
+    Serial1.write("AT+HTTPSETUP\r\n");
+    while(1){
+        if(Serial1.available()){
+            readBuffer(httpbuff,100);
+            if(NULL != strstr(httpbuff,"OK")){
+                return true;
+            }
+            if(NULL != strstr(httpbuff,"ERROR")){
+                SerialUSB.println("Fail to set up http connect");
+                return false;
+            }
+        }
+    }
+}
+
+bool  DFRobot_L218::httpPost(const char *Host , String data)
+{
+    if(!httpConnect(Host)){
+        return false;
+    }
+    Serial1.write("AT+HTTPACTION=2,");
+    String    length;
+    length += data.length();
+    Serial1.print(length);
+    Serial1.write(",\"");
+    Serial1.print(data);
+    Serial1.write("\"\r\n");
+    get_String();
+    SerialUSB.println();
+    return true;
+}
+
+void   DFRobot_L218::httpGet(const char *Host)
+{
+    if(!httpConnect(Host)){
+        return;
+    }
+    Serial1.write("AT+HTTPACTION=0\r\n");
+    get_String();
+    SerialUSB.println();
+}
+
+void   DFRobot_L218::httpDisconnect(void)
+{
+    Serial1.write("AT+HTTPCLOSE\r\n");
+}
+
+bool   DFRobot_L218::check_send_cmd(const char* cmd, const char* resp, unsigned int timeout, unsigned int chartimeout)
+{
+    char SIMbuffer[100];
+    cleanBuffer(SIMbuffer,100);
+    Serial1.write(cmd);
+    readBuffer(SIMbuffer,100,timeout, chartimeout);
+    if(NULL != strstr(SIMbuffer,resp)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+void DFRobot_L218::get_String(void)
+{
+    uint64_t t1 = millis();
+    while(1){
+        while(Serial1.available()){
+            SerialUSB.print(char(Serial1.read()));
+            t1 = millis();
+        }
+        if((millis() - t1) > 10000){
+            return;
+        }
+    }
+}

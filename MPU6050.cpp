@@ -16,6 +16,7 @@ void   MPU6050::enableMPU6050(void)
 
 void   MPU6050::disableMPU6050()
 {
+    setSleepEnabled(true);
     digitalWrite(12 , LOW   );
 }
 

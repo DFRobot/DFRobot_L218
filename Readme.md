@@ -44,7 +44,7 @@ bool init(void);
  *     ture   Success
  *     false  Failed
  */
-bool tureON(void);
+bool turnON(void);
 
 /*
  * @brief Check if L218 is turn on
@@ -56,9 +56,34 @@ bool tureON(void);
 bool checkTurnON(void);
 
 /*
+ * @brief Turn OFF L218
+ *
+ */
+void turnOFF(void);
+
+/*
+ * @brief Check if SIM card is inserted
+ *
+ * @return
+ *     ture   Card inserted
+ *     false  No card
+ */
+bool checkSIMcard(void);
+
+/*
+ * @brief Check battery power
+ *
+ * @return
+ *     Battery power value(possible value: 0,10,20,30,40,50,60,70,80,90,100)
+ *
+ */
+int  checkBattery(void);
+
+/*
  * @brief Begin to send short message
  *
  * @param phoneNumber Target number for send short message
+ *
  * @return
  *     ture   Turn ON 
  *     false  Turn OFF
@@ -132,7 +157,7 @@ bool initNetwork(void);
  *     ture   Success
  *     false  Failed
  */
-bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
+bool mqttConnect(char* iot_client, char* iot_username, char* iot_key);
 
 /*
  * @brief MQTT publish command
@@ -145,7 +170,7 @@ bool MQTTconnect(char* iot_client, char* iot_username, char* iot_key);
  *     ture   Success
  *     false  Failed
  */
-bool MQTTpublish(char* iot_topic, String iot_data);
+bool mqttPublish(char* iot_topic, String iot_data);
 
 /*
  * @brief LED blink
@@ -166,6 +191,42 @@ void sleepMode(void);
  *
  */
 void wakeUp(void);
+
+/*
+ * @brief Initialize HTTP service
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool httpInit(void);
+
+/*
+ * @brief HTTP POST
+ *
+ * @param URL  POST URL
+ *        data POST data
+ *
+ * @return
+ *     ture   Success
+ *     false  Failed
+ */
+bool httpPost(const char *URL, String data);
+
+/*
+ * @brief HTTP GET
+ *
+ * @param URL  GET URL
+ *
+ * @Note This function print the get data
+ */
+void httpGet(void);
+
+/*
+ * @brief Disconnect from server and cancel initialization
+ *
+ */
+void httpDisconnect(void);
 
 ```
 

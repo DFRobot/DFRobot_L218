@@ -86,20 +86,20 @@ void loop()
             SerialUSB.println("disconnect");
             return;
         }
-        if(l218.MQTTconnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){  //MQTT connect requst
+        if(l218.mqttConnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){  //MQTT connect requst
             SerialUSB.println("MQTT connected");
             delay(2000);
         }else{
             SerialUSB.println("MQTT connect failed");
             return;
         }
-        if(l218.MQTTpublish(IOT_TOPIC,"L218test")){             //MQTT publish data
+        if(l218.mqttPublish(IOT_TOPIC,"L218test")){             //MQTT publish data
             SerialUSB.println("Publish OK");
         }else{
             SerialUSB.println("MQTT fail to publish");
             return;
         }
-        if(l218.MQTTdisconnect()){                              //MQTT disconnect requst
+        if(l218.mqttDisconnect()){                              //MQTT disconnect requst
             SerialUSB.println("MQTT disconnected");
         }else{
             SerialUSB.println("Fail to disconnect");

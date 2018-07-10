@@ -28,24 +28,26 @@ writeFile	KEYWORD2
 disconnect	KEYWORD2
 createFolder	KEYWORD2
 deleteFolder	KEYWORD2
-MQTTconnect	KEYWORD2
-MQTTpublish	KEYWORD2
-MQTTsubscribe	KEYWORD2
-MQTTunsubscribe	KEYWORD2
-MQTTrecv	KEYWORD2
-MQTTdisconnect	KEYWORD2
+mqttConnect	KEYWORD2
+mqttPublish	KEYWORD2
+mqttSubscribe	KEYWORD2
+mqttUnsubscribe	KEYWORD2
+mqttRecv	KEYWORD2
+mqttDisconnect	KEYWORD2
 initNetwork	KEYWORD2
 wakeUp	KEYWORD2
 sleepMode	KEYWORD2
 turnON	KEYWORD2
+turnOFF	KEYWORD2
 startMPU6050	KEYWORD2
 stopMPU6050	KEYWORD2
 sleepMode	KEYWORD2
 beginSMS	KEYWORD2
 sendSMS	KEYWORD2
 connect	KEYWORD2
-check_SIMcard	KEYWORD2
-check_TurnON	KEYWORD2
+checkSIMcard	KEYWORD2
+checkTurnON	KEYWORD2
+checkBattery	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

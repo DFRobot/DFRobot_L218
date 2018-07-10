@@ -1,7 +1,7 @@
  /*
   * File  : DFRobot_Upload.ino
   * Power : L218 powered by 3.7V lithium battery
-  * Brief : This example use L218 to get position, temperature and time then upload the data to iot with MQTT
+  * Brief : This example use L218 to get position, temperature, battery power and time then upload the data to iot with MQTT
   *         And store the data in SD card. Then device enter sleep mode for 20 seconds
   *         It will do those things again when it wake up
   * Note  : This example needs SIM card and SD card
@@ -10,8 +10,8 @@
   *         To use a library in a sketch, select it from Sketch > Import Library.
   */
 
-#include <MPU6050.h>
 #include <DFRobot_L218.h>
+#include <MPU6050.h>
 #include <SPI.h>
 #include <SD.h>
 #include <RTCZero.h>
@@ -83,7 +83,7 @@ void setup(){
     SerialUSB.begin(115200);
     while(!SerialUSB);
     l218.init();                                                //Initialization
-    rtc.begin();                                                // initialize RTC
+    rtc.begin();                                                //Initialize RTC
 
     // Set the time
     rtc.setHours(hours);
@@ -112,7 +112,8 @@ void setup(){
     LowPower.attachInterruptWakeup(RTC_ALARM_WAKEUP, wakeup, CHANGE );
 }
 
-void loop(){
+void loop()
+{
     if(l218.checkTurnON()){                                     //Check if L218 start
         double  Longitude,Latitude;
         SerialUSB.println("Turn ON !");
@@ -150,12 +151,12 @@ void loop(){
         delay(500);
         mpu.disableMPU6050();                                   //Disable MPU6050
         String  l218Buffer;
-        l218Buffer  = String();
+        l218Buffer  =  String();
         l218Buffer += "Longitude : ";
         l218Buffer +=  Longitude;
         l218Buffer += " Latitude : ";
         l218Buffer +=  Latitude;
-        l218Buffer += " Temperature: ";
+        l218Buffer += " Temperature : ";
         l218Buffer +=  temperature;
         l218Buffer += " Date :";
         l218Buffer +=  rtc.getYear();
@@ -169,6 +170,9 @@ void loop(){
         l218Buffer +=  rtc.getMinutes();
         l218Buffer += ":";
         l218Buffer +=  rtc.getSeconds();
+        l218Buffer += "Battery power : ";
+        l218Buffer +=  l218.checkBattery();
+        l218Buffer += "%";
         SerialUSB.println(l218Buffer);
         if(l218.checkSIMcard()){                                //Check SIM card
             SerialUSB.println("Card ready");
@@ -190,20 +194,20 @@ void loop(){
             SerialUSB.println("disconnect");
             return;
         }
-        if(l218.MQTTconnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){  //MQTT connect requst
+        if(l218.mqttConnect(IOT_CLIENT,IOT_USERNAME,IOT_KEY)){  //MQTT connect requst
             SerialUSB.println("MQTT connected");
             delay(2000);
         }else{
             SerialUSB.println("MQTT connect failed");
             return;
         }
-        if(l218.MQTTpublish(IOT_TOPIC,l218Buffer)){             //MQTT publish data
+        if(l218.mqttPublish(IOT_TOPIC,l218Buffer)){             //MQTT publish data
             SerialUSB.println("Publish OK");
         }else{
             SerialUSB.println("MQTT fail to publish");
             return;
         }
-        if(l218.MQTTdisconnect()){                              //MQTT disconnect requst
+        if(l218.mqttDisconnect()){                              //MQTT disconnect requst
             SerialUSB.println("MQTT disconnected");
         }else{
             SerialUSB.println("Fail to disconnect");
